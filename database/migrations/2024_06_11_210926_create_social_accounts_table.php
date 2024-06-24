@@ -8,9 +8,9 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('social_accounts', function (Blueprint $table) {
-            $table->uuid('id')
+            $table->ulid('id')
                 ->primary();
-            $table->foreignUuid('user_id')
+            $table->foreignUlid('user_id')
                 ->constrained()
                 ->onDelete('cascade');
             $table->string('provider');
