@@ -17,7 +17,7 @@ class CreateUserAction
      */
     public function handle(array $data): User
     {
-        $user = User::firstOrCreate(['email' => $data['email']], $data);
+        $user = User::firstOrCreate(['email' => $data['email'], 'name' => $data['profile']['first_name']], $data);
 
         if (isset($data['profile'])) {
             $profileData = $data['profile'];

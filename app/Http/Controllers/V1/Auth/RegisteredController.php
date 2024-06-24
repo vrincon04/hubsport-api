@@ -14,16 +14,20 @@ class RegisteredController extends Controller
 {
     public function __invoke(RegisterRequest $request)
     {
-        $user = CreateUserAction::run($request->safe()->all());
+        try {
+            $user = CreateUserAction::run($request->safe()->all());
 
-        event(new Registered($user));
+            event(new Registered($user));
 
-        Auth::login($user);
+            Auth::login($user);
 
-        return response()->json([
-            'message' => 'User authenticated successfully',
-            'data' => UserResource::make($user),
-            'token' => $user->createToken(config('app.name'))->plainTextToken,
-        ], Response::HTTP_OK);
+            return response()->json([
+                'message' => 'User authenticated successfully',
+                'data' => UserResource::make($user),
+                'token' => $user->createToken(config('app.name'))->plainTextToken,
+            ], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }
