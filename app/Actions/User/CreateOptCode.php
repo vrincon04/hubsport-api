@@ -12,7 +12,7 @@ class CreateOptCode
 
     public function handle(User $user): string
     {
-        $code = rand(100000, 999999);
+        $code = rand(1000, 9999);
 
         EmailVerification::create([
             'email' => $user->email,
