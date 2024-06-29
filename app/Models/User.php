@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Contracts\Auth\MustVerifyOpt;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,7 +14,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyOpt
 {
     use HasApiTokens;
     use HasFactory;
@@ -22,6 +22,7 @@ class User extends Authenticatable
     use HasSlug;
     use InteractsWithMedia;
     use Notifiable;
+    use \App\Traits\Auth\MustVerifyOpt;
 
     /**
      * The attributes that are mass assignable.
