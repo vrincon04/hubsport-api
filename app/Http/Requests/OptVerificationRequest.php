@@ -9,7 +9,7 @@ class OptVerificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => ['string', 'min:6', 'max:8', 'required'],
+            'code' => ['string', 'min:4', 'max:8', 'required'],
         ];
     }
 }
