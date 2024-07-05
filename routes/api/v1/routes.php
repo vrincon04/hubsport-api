@@ -7,3 +7,9 @@ Route::prefix('auth')
     ->group(
         base_path('routes/api/v1/auth.php')
     );
+
+Route::prefix('sport')
+    ->as('sport:')
+    ->group(
+        base_path('routes/api/v1/sport.php')
+    );
