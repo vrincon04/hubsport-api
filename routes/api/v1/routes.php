@@ -13,3 +13,9 @@ Route::prefix('sport')
     ->group(
         base_path('routes/api/v1/sport.php')
     );
+
+Route::prefix('role')
+    ->as('role:')
+    ->group(
+        base_path('routes/api/v1/role.php')
+    );
