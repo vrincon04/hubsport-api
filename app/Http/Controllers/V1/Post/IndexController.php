@@ -10,6 +10,6 @@ class IndexController extends Controller
 {
     public function __invoke()
     {
-        PostResource::collection(Post::paginate());
+        return PostResource::collection(Post::paginate());
     }
 }
