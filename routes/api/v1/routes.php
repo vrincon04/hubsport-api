@@ -19,3 +19,10 @@ Route::prefix('role')
     ->group(
         base_path('routes/api/v1/role.php')
     );
+
+Route::prefix('posts')
+    ->as('posts:')
+    ->middleware(['auth:sanctum'])
+    ->group(
+        base_path('routes/api/v1/post.php')
+    );
