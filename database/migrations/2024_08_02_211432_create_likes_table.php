@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('likes', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->foreignUlid('user_id');
-            $table->morphs('likeable');
+            $table->ulidMorphs('likeable');
             $table->timestamps();
         });
     }
