@@ -8,7 +8,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('likes', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->ulid('id')->primary();
             $table->foreignUlid('user_id');
             $table->ulidMorphs('likeable');
             $table->timestamps();
