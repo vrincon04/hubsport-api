@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\V1\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\OptVerificationRequest;
+use App\Http\Requests\Auth\OptVerificationRequest;
 use App\Models\EmailVerification;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;

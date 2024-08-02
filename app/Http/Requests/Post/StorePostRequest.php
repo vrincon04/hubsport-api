@@ -17,10 +17,6 @@ class StorePostRequest extends FormRequest
             'body' => [
                 'required'
             ],
-            'user_id' => [
-                'required',
-                'exists:users'
-            ],
             'status' => [
                 'required',
                 Rule::enum(PostStatusEnum::class)

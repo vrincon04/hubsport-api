@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Contracts\Auth\MustVerifyOpt;
+use App\Traits\Like\InteractsWithLike;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,6 +22,7 @@ class User extends Authenticatable implements MustVerifyOpt
     use HasUlids;
     use HasSlug;
     use InteractsWithMedia;
+    use InteractsWithLike;
     use Notifiable;
     use \App\Traits\Auth\MustVerifyOpt;
 

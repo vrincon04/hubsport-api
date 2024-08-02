@@ -2,10 +2,11 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin \App\Models\Post */
+/** @mixin Post */
 class PostResource extends JsonResource
 {
     public function toArray(Request $request): array
@@ -19,11 +20,12 @@ class PostResource extends JsonResource
             'status' => $this->status,
             'published_at' => $this->published_at,
 
-            'user_id' => $this->user_id,
-
             'user' => new UserResource($this->whenLoaded('user')),
 
             'gallery' => MediaResource::collection($this->whenLoaded('gallery')),
+
+            'likes' => $this->whenLoaded('likes'),
+            'likes_count' => $this->whenLoaded('likes'),
         ];
     }
 }

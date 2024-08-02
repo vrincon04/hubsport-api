@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Contracts\Like\Likeable;
+use App\Traits\Like\HasLike;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,12 +16,13 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
-class Post extends Model implements HasMedia
+class Post extends Model implements HasMedia, Likeable
 {
     use SoftDeletes;
     use HasUlids;
     use HasFactory;
     use HasSlug;
+    use HasLike;
     use InteractsWithMedia;
 
     protected $fillable = [
