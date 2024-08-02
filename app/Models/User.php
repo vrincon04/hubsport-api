@@ -76,6 +76,11 @@ class User extends Authenticatable implements MustVerifyOpt
         return $this->hasMany(SocialAccount::class);
     }
 
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
+    }
+
     /**
      * Get the options for generating the slug.
      */
