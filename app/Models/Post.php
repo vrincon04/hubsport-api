@@ -72,4 +72,9 @@ class Post extends Model implements HasMedia, Likeable
     {
         $this->addMediaConversion('gallery');
     }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 }
