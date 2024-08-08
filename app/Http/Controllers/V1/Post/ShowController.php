@@ -10,6 +10,6 @@ class ShowController extends Controller
 {
     public function __invoke(Post $post)
     {
-        return new PostResource($post->load(['user.profile', 'user.avatar', 'gallery']));
+        return new PostResource($post->load(['user.profile', 'user.avatar', 'likes.user.avatar', 'likes.user.profile', 'gallery']));
     }
 }
