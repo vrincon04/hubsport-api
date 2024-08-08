@@ -8,14 +8,17 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
-class User extends Authenticatable implements MustVerifyOpt
+class User extends Authenticatable implements MustVerifyOpt, HasMedia
 {
     use HasApiTokens;
     use HasFactory;
@@ -82,6 +85,15 @@ class User extends Authenticatable implements MustVerifyOpt
     }
 
     /**
+     * @return MorphOne
+     */
+    public function avatar(): MorphOne
+    {
+        return $this->morphOne(Media::class, 'model')
+            ->where('collection_name', 'avatar');
+    }
+
+    /**
      * Get the options for generating the slug.
      */
     public function getSlugOptions() : SlugOptions
@@ -89,5 +101,10 @@ class User extends Authenticatable implements MustVerifyOpt
         return SlugOptions::create()
             ->generateSlugsFrom('name')
             ->saveSlugsTo('slug');
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('avatar')->singleFile();
     }
 }
