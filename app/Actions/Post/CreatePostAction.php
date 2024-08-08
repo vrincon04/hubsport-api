@@ -17,7 +17,9 @@ class CreatePostAction
 
         if ($request->hasFile('gallery')) {
             $post->addMediaFromRequest('gallery')
-                ->toMediaCollection('gallery');
+                ->each(function ($media) use ($post) {
+                    $media->toMediaCollection('gallery');
+                });
         }
 
         return $post;
