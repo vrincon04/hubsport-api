@@ -10,7 +10,8 @@ class IndexController extends Controller
 {
     public function __invoke()
     {
-        $post = Post::with(['user.profile', 'user.avatar', 'likes.user.avatar', 'likes.user.profile', 'gallery']);
+        $post = Post::with(['user.profile', 'user.avatar', 'likes.user.avatar', 'likes.user.profile', 'gallery'])
+            ->withCount(['likes']);
 
         return PostResource::collection($post->paginate());
     }
