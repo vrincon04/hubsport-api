@@ -12,6 +12,7 @@ class StoreController extends Controller
 {
     public function __invoke(StorePostRequest $request)
     {
-        return new PostResource(CreatePostAction::run($request));
+        $post = CreatePostAction::run($request);
+        return new PostResource($post->load('user.profile', 'user.avatar', 'gallery'));
     }
 }
