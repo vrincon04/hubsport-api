@@ -10,6 +10,8 @@ class IndexController extends Controller
 {
     public function __invoke()
     {
-        return PostResource::collection(Post::paginate());
+        $post = Post::with(['gallery', 'user']);
+
+        return PostResource::collection($post->paginate());
     }
 }
