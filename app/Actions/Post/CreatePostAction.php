@@ -16,7 +16,7 @@ class CreatePostAction
         $post = $user->posts()->create($request->validated());
 
         if ($request->hasFile('gallery')) {
-            $post->addMediaFromRequest('gallery')
+            $post->addMultipleMediaFromRequest(['gallery'])
                 ->each(function ($media) use ($post) {
                     $media->toMediaCollection('gallery');
                 });
