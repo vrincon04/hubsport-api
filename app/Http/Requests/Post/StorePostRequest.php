@@ -26,6 +26,15 @@ class StorePostRequest extends FormRequest
                 'required',
                 'date'
             ],
+            'gallery' => [
+                'sometimes',
+                'array'
+            ],
+            'gallery.*' => [
+                'file',
+                'mimetypes:image/jpeg,image/jpg,image/png,video/mp4',
+                'max:10240',
+            ],
         ];
     }
 }

@@ -71,6 +71,7 @@ class Post extends Model implements HasMedia, Likeable
     public function registerMediaCollections(?Media $media = null): void
     {
         $this->addMediaCollection('gallery');
+        $this->addMediaConversion('video');
     }
 
     public function getRouteKeyName(): string
