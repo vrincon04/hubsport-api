@@ -8,6 +8,13 @@ Route::prefix('auth')
         base_path('routes/api/v1/auth.php')
     );
 
+Route::prefix('user')
+    ->as('user:')
+    ->middleware(['auth:sanctum'])
+    ->group(
+        base_path('routes/api/v1/user.php')
+    );
+
 Route::prefix('sport')
     ->as('sport:')
     ->group(

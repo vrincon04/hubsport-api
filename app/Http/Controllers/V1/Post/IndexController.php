@@ -11,7 +11,7 @@ class IndexController extends Controller
     public function __invoke()
     {
         $post = Post::with(['user.profile', 'user.avatar', 'likes.user.avatar', 'likes.user.profile', 'gallery'])
-            ->withCount(['likes']);
+            ->withCount(['likes'])->orderByDesc('created_at');
 
         return PostResource::collection($post->paginate());
     }
