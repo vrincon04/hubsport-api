@@ -33,7 +33,7 @@ class StorePostRequest extends FormRequest
             'gallery.*' => [
                 'file',
                 'mimetypes:image/jpeg,image/jpg,image/png,video/mp4',
-                'max:10240',
+                'max:20480',
             ],
         ];
     }
