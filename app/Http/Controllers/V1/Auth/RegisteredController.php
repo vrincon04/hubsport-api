@@ -17,7 +17,7 @@ class RegisteredController extends Controller
         try {
             $user = CreateUserAction::run($request->safe()->all());
 
-            event(new Registered($user));
+            //event(new Registered($user));
 
             Auth::login($user);
 
