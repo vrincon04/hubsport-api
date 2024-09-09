@@ -12,7 +12,7 @@ class UpdateUserRequest extends FormRequest
             'profile.first_name' => ['required', 'string', 'min:2', 'max:100'],
             'profile.last_name' => ['required', 'string', 'min:2', 'max:100'],
             'profile.bio' => ['sometimes', 'string', 'max:500'],
-            'profile.dob' => ['sometimes', 'date'],
+            'profile.birth_date' => ['sometimes', 'date'],
         ];
     }
 }
