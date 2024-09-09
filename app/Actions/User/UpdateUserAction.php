@@ -20,6 +20,10 @@ class UpdateUserAction
     public function handle(UpdateUserRequest $request, User $user): User
     {
         $user->update($request->safe()->all());
+
+        if ($request->has('profile')) {
+            $user->profile()->update($request->input('profile'));
+        }
         $user->refresh();
 
         return $user;

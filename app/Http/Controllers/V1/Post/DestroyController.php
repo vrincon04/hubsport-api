@@ -12,7 +12,7 @@ class DestroyController extends Controller
         $post->load('user');
 
         if ($post->user_id !== auth()->id()) {
-            abort(403);
+            abort(403, 'Unauthorized action.');
         }
 
         $post->delete();

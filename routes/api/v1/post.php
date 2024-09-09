@@ -1,20 +1,26 @@
 <?php
 
+use App\Http\Controllers\V1\Post\DestroyController;
+use App\Http\Controllers\V1\Post\IndexController;
+use App\Http\Controllers\V1\Post\LikeController;
+use App\Http\Controllers\V1\Post\ShowController;
+use App\Http\Controllers\V1\Post\StoreController;
+use App\Http\Controllers\V1\Post\UnlikeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', \App\Http\Controllers\V1\Post\IndexController::class)
+Route::get('/', IndexController::class)
     ->name('list');
-Route::post('/', \App\Http\Controllers\V1\Post\StoreController::class)
+Route::post('/', StoreController::class)
     ->name('store');
 Route::prefix('/{post}')
     ->group(function () {
-        Route::get('/', \App\Http\Controllers\V1\Post\ShowController::class)
+        Route::get('/', ShowController::class)
             ->name('show');
-        Route::delete('/', \App\Http\Controllers\V1\Post\DestroyController::class)
+        Route::delete('/', DestroyController::class)
             ->name('destroy');
-        Route::post('like', \App\Http\Controllers\V1\Post\LikeController::class)
+        Route::post('like', LikeController::class)
             ->name('like');
-        Route::delete('unlike', \App\Http\Controllers\V1\Post\UnlikeController::class)
+        Route::delete('unlike', UnlikeController::class)
             ->name('unlike');
     });
 
