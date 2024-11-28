@@ -13,6 +13,12 @@ return new class extends Migration {
             $table->foreignUlid('user_id')
                 ->constrained()
                 ->onDelete('cascade');
+            $table->foreignUlid('country_id')
+                ->constrained()
+                ->onDelete('cascade');
+            $table->foreignUlid('sport_id')
+                ->constrained()
+                ->onDelete('cascade');
             $table->string('first_name');
             $table->string('last_name');
             $table->string('phone_number')
@@ -21,6 +27,8 @@ return new class extends Migration {
             $table->string('bio')
                 ->nullable();
             $table->date('birth_date')
+                ->nullable();
+            $table->string('position')
                 ->nullable();
             $table->timestamps();
         });

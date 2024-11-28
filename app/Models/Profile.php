@@ -46,6 +46,16 @@ class Profile extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function country(): BelongsTo
+    {
+        return $this->belongsTo(Country::class);
+    }
+
+    public function sport(): BelongsTo
+    {
+        return $this->belongsTo(Sport::class);
+    }
+
     /**
      * Get the user's full name.
      *
