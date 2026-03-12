@@ -28,4 +28,14 @@ class Sport extends Model
     {
         return $this->hasMany(Profile::class);
     }
+
+    public function news(): HasMany
+    {
+        return $this->hasMany(News::class);
+    }
+
+    public function matchResults(): HasMany
+    {
+        return $this->hasMany(MatchResult::class);
+    }
 }

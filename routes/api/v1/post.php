@@ -22,5 +22,10 @@ Route::prefix('/{post}')
             ->name('like');
         Route::delete('unlike', UnlikeController::class)
             ->name('unlike');
-    });
 
+        // Comments
+        Route::get('comments', [\App\Http\Controllers\V1\Post\CommentController::class , 'index'])
+            ->name('comments.index');
+        Route::post('comments', [\App\Http\Controllers\V1\Post\CommentController::class , 'store'])
+            ->name('comments.store');
+    });

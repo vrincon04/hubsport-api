@@ -21,6 +21,10 @@ class UserResource extends JsonResource
             'read_notifications_count' => $this->read_notifications_count,
             'unread_notifications_count' => $this->unread_notifications_count,
 
+            'followers_count' => $this->followers_count ?? $this->followers()->count(),
+            'following_count' => $this->following_count ?? $this->following()->count(),
+            'posts_count' => $this->posts_count ?? $this->posts()->count(),
+
             'profile' => new ProfileResource($this->whenLoaded('profile')),
             'avatar' => new MediaResource($this->whenLoaded('avatar')),
         ];

@@ -41,7 +41,7 @@ class Post extends Model implements HasMedia, Likeable
 
     public function gallery(): morphMany
     {
-        return $this->morphMany(Media::class, 'model')
+        return $this->morphMany(Media::class , 'model')
             ->where('collection_name', 'gallery');
     }
 
@@ -55,7 +55,7 @@ class Post extends Model implements HasMedia, Likeable
     /**
      * Get the options for generating the slug.
      */
-    public function getSlugOptions() : SlugOptions
+    public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
             ->generateSlugsFrom('title')
@@ -77,5 +77,10 @@ class Post extends Model implements HasMedia, Likeable
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    public function comments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Comment::class);
     }
 }
