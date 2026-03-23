@@ -6,6 +6,11 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateUserRequest extends FormRequest
 {
+    public function authorize(): bool
+    {
+        return $this->user()->id === $this->route('user')->id;
+    }
+
     public function rules(): array
     {
         return [

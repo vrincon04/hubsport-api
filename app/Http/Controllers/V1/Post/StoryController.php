@@ -48,6 +48,6 @@ class StoryController extends Controller
         return response()->json([
             'message' => 'Story uploaded successfully',
             'data' => $story,
-        ], 210);
+        ], 201);
     }
 }
