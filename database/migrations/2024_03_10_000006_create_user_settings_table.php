@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('user_settings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignUlid('user_id')->constrained()->onDelete('cascade');
             $table->json('notifications')->nullable();
             $table->json('privacy')->nullable();
             $table->json('security')->nullable();

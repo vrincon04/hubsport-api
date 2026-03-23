@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->integer('score_b')->default(0);
             $table->dateTime('match_date');
             $table->string('status')->default('completed'); // live, upcoming, completed
-            $table->foreignId('sport_id')->constrained()->onDelete('cascade');
+            $table->foreignUlid('sport_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

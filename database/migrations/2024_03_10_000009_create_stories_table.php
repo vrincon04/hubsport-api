@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('stories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignUlid('user_id')->constrained()->onDelete('cascade');
             $table->string('media_url');
             $table->string('type')->default('image'); // image, video
             $table->timestamp('expires_at');

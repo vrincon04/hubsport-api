@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
             $table->foreignId('conversation_id')->constrained()->onDelete('cascade');
-            $table->foreignId('sender_id')->constrained('users')->onDelete('cascade');
+            $table->foreignUlid('sender_id')->constrained('users')->onDelete('cascade');
             $table->text('text');
             $table->boolean('is_read')->default(false);
             $table->timestamps();

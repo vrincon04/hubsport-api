@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->string('title');
             $table->text('content');
             $table->string('image_url')->nullable();
-            $table->foreignId('sport_id')->constrained()->onDelete('cascade');
+            $table->foreignUlid('sport_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
