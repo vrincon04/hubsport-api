@@ -14,8 +14,8 @@ Route::post('/{driver}/callback', SocialAuthenticatedController::class)
     ->middleware('throttle:6,1')
     ->name('register.social');
 
-Route::post('verify/opt', VerifyOptController::class);
-
+Route::post('verify/opt', VerifyOptController::class)
+    ->name('verify.opt');
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/logout', [AuthenticatedController::class, 'destroy'])
