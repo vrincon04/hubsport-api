@@ -2,13 +2,13 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use App\Models\Profile;
-use App\Models\Post;
 use App\Models\Comment;
-use App\Models\Like;
-use App\Models\JobOffer;
 use App\Models\JobApplication;
+use App\Models\JobOffer;
+use App\Models\Like;
+use App\Models\Post;
+use App\Models\Profile;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -35,26 +35,34 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // Crear 15 Usuarios
-        User::factory(15)->create()->each(function (User $user) {
-            // Crear 1 Perfil por usuario
+        // Usuarios de prueba (Faker + contraseña "password" en UserFactory)
+        User::factory(10)->create()->each(function (User $user) {
             Profile::factory()->create(['user_id' => $user->id]);
 
-            // Crear 3 Publicaciones (Posts) por usuario
             Post::factory(3)->create(['user_id' => $user->id])->each(function (Post $post) {
-                // Crear 2 Comentarios por Post
-                Comment::factory(2)->create(['post_id' => $post->id]);
-                // Crear 3 Likes por Post (Relación polimórfica)
+                Comment::factory(2)->create([
+                    'post_id' => $post->id,
+                    'user_id' => User::query()->inRandomOrder()->value('id'),
+                ]);
                 Like::factory(3)->create([
+                    'user_id' => User::query()->inRandomOrder()->value('id'),
                     'likeable_id' => $post->id,
                     'likeable_type' => Post::class,
                 ]);
             });
 
-            // Crear 1 Oferta de Empleo por usuario
             JobOffer::factory(1)->create(['user_id' => $user->id])->each(function (JobOffer $job) {
-                // Crear 3 Aplicaciones a la oferta por usuarios aleatorios (Faker los maneja)
-                JobApplication::factory(3)->create(['job_offer_id' => $job->id]);
+                User::query()
+                    ->whereKeyNot($job->user_id)
+                    ->inRandomOrder()
+                    ->limit(3)
+                    ->pluck('id')
+                    ->each(function (string $applicantId) use ($job) {
+                        JobApplication::factory()->create([
+                            'job_offer_id' => $job->id,
+                            'user_id' => $applicantId,
+                        ]);
+                    });
             });
         });
     }

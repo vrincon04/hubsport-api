@@ -10,10 +10,12 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Like extends Model
 {
-    use HasUlids, HasFactory;
+    use HasFactory, HasUlids;
 
     protected $fillable = [
         'user_id',
+        'likeable_id',
+        'likeable_type',
     ];
 
     public function user(): BelongsTo

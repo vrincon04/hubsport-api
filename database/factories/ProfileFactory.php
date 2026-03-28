@@ -13,7 +13,7 @@ class ProfileFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => $this->faker->word(),
+            'user_id' => \App\Models\User::factory(),
             'first_name' => $this->faker->firstName(),
             'last_name' => $this->faker->lastName(),
             'phone_number' => $this->faker->phoneNumber(),
