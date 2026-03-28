@@ -9,7 +9,8 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__.'/../routes/api/v1/routes.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
-        apiPrefix: 'v1',
+        // Prefijo único: /api/v1/... (convención Laravel + clientes móviles). Evita 404 si la app llama api/v1/auth/login.
+        apiPrefix: 'api/v1',
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->api(prepend: [

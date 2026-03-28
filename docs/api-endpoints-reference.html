@@ -77,7 +77,7 @@
 
   <h1>Hubsport API v1 — Endpoints nuevos</h1>
   <p class="meta">
-    Base URL de ejemplo: <code>https://yordy.shop/v1</code><br />
+    Base URL de ejemplo: <code>https://yordy.shop/api/v1</code><br />
     Cabeceras habituales: <code>Accept: application/json</code> · Rutas protegidas: <code>Authorization: Bearer &lt;token&gt;</code>
   </p>
 
@@ -90,7 +90,7 @@
   <h3>Listar stories</h3>
   <table>
     <tr><th>Método</th><td class="method get">GET</td></tr>
-    <tr><th>Ruta</th><td class="path">/v1/stories</td></tr>
+    <tr><th>Ruta</th><td class="path">/api/v1/stories</td></tr>
     <tr><th>Auth</th><td>Bearer (Sanctum)</td></tr>
     <tr><th>Query / Body</th><td>Ninguno</td></tr>
     <tr><th>200</th><td><code>{ "data": { "&lt;user_ulid&gt;": [ …stories… ], … } }</code> (agrupado por usuario; stories activas, tuyas + seguidos)</td></tr>
@@ -99,7 +99,7 @@
   <h3>Crear story</h3>
   <table>
     <tr><th>Método</th><td class="method post">POST</td></tr>
-    <tr><th>Ruta</th><td class="path">/v1/stories</td></tr>
+    <tr><th>Ruta</th><td class="path">/api/v1/stories</td></tr>
     <tr><th>Auth</th><td>Bearer</td></tr>
     <tr><th>Content-Type</th><td><code>application/json</code></td></tr>
     <tr><th>Body JSON</th><td>
@@ -117,7 +117,7 @@
   <h3>Listar conexiones aceptadas</h3>
   <table>
     <tr><th>Método</th><td class="method get">GET</td></tr>
-    <tr><th>Ruta</th><td class="path">/v1/connections</td></tr>
+    <tr><th>Ruta</th><td class="path">/api/v1/connections</td></tr>
     <tr><th>Auth</th><td>Bearer</td></tr>
     <tr><th>200</th><td><code>{ "message", "data": [ ConnectionResource ] }</code></td></tr>
   </table>
@@ -125,7 +125,7 @@
   <h3>Solicitudes entrantes (pendientes)</h3>
   <table>
     <tr><th>Método</th><td class="method get">GET</td></tr>
-    <tr><th>Ruta</th><td class="path">/v1/connections/requests/incoming</td></tr>
+    <tr><th>Ruta</th><td class="path">/api/v1/connections/requests/incoming</td></tr>
     <tr><th>Auth</th><td>Bearer</td></tr>
     <tr><th>200</th><td>Lista con <code>sender</code> cargado (UserResource)</td></tr>
   </table>
@@ -133,7 +133,7 @@
   <h3>Solicitudes salientes (pendientes)</h3>
   <table>
     <tr><th>Método</th><td class="method get">GET</td></tr>
-    <tr><th>Ruta</th><td class="path">/v1/connections/requests/outgoing</td></tr>
+    <tr><th>Ruta</th><td class="path">/api/v1/connections/requests/outgoing</td></tr>
     <tr><th>Auth</th><td>Bearer</td></tr>
     <tr><th>200</th><td>Lista con <code>recipient</code> cargado</td></tr>
   </table>
@@ -141,7 +141,7 @@
   <h3>Enviar solicitud</h3>
   <table>
     <tr><th>Método</th><td class="method post">POST</td></tr>
-    <tr><th>Ruta</th><td class="path">/v1/connections</td></tr>
+    <tr><th>Ruta</th><td class="path">/api/v1/connections</td></tr>
     <tr><th>Auth</th><td>Bearer</td></tr>
     <tr><th>Body JSON</th><td><code>{ "connected_user_id": "&lt;ULID usuario&gt;" }</code> — debe existir en <code>users.id</code></td></tr>
     <tr><th>201 / 200</th><td>Solicitud creada o reabierta desde <code>rejected</code></td></tr>
@@ -152,7 +152,7 @@
   <h3>Aceptar solicitud</h3>
   <table>
     <tr><th>Método</th><td class="method post">POST</td></tr>
-    <tr><th>Ruta</th><td class="path">/v1/connections/{connection}/accept</td></tr>
+    <tr><th>Ruta</th><td class="path">/api/v1/connections/{connection}/accept</td></tr>
     <tr><th>Path</th><td><code>connection</code> = id numérico (tabla <code>connections</code>)</td></tr>
     <tr><th>Auth</th><td>Bearer — solo el destinatario (<code>connected_user_id</code>)</td></tr>
     <tr><th>200</th><td>Estado <code>accepted</code></td></tr>
@@ -162,7 +162,7 @@
   <h3>Rechazar solicitud</h3>
   <table>
     <tr><th>Método</th><td class="method post">POST</td></tr>
-    <tr><th>Ruta</th><td class="path">/v1/connections/{connection}/reject</td></tr>
+    <tr><th>Ruta</th><td class="path">/api/v1/connections/{connection}/reject</td></tr>
     <tr><th>Auth</th><td>Bearer — solo destinatario</td></tr>
     <tr><th>200</th><td>Estado <code>rejected</code></td></tr>
   </table>
@@ -170,7 +170,7 @@
   <h3>Eliminar / cancelar</h3>
   <table>
     <tr><th>Método</th><td class="method delete">DELETE</td></tr>
-    <tr><th>Ruta</th><td class="path">/v1/connections/{connection}</td></tr>
+    <tr><th>Ruta</th><td class="path">/api/v1/connections/{connection}</td></tr>
     <tr><th>Auth</th><td>Bearer — debe participar en la conexión</td></tr>
     <tr><th>200</th><td>Cancelar saliente, descartar entrante, unfriend si <code>accepted</code>, borrar <code>rejected</code></td></tr>
   </table>
@@ -182,7 +182,7 @@
   <h3>Ayuda / FAQ (estructura)</h3>
   <table>
     <tr><th>Método</th><td class="method get">GET</td></tr>
-    <tr><th>Ruta</th><td class="path">/v1/help</td></tr>
+    <tr><th>Ruta</th><td class="path">/api/v1/help</td></tr>
     <tr><th>Auth</th><td>No</td></tr>
     <tr><th>200</th><td><code>{ "message", "data": { "sections": [ { "id", "title", "articles": [] } ] } }</code></td></tr>
   </table>
@@ -190,7 +190,7 @@
   <h3>Formulario de contacto</h3>
   <table>
     <tr><th>Método</th><td class="method post">POST</td></tr>
-    <tr><th>Ruta</th><td class="path">/v1/contact</td></tr>
+    <tr><th>Ruta</th><td class="path">/api/v1/contact</td></tr>
     <tr><th>Auth</th><td>Opcional. Sin sesión: <code>email</code> obligatorio.</td></tr>
     <tr><th>Body JSON</th><td>
       <ul>
@@ -205,7 +205,7 @@
   <h2>4. Billing (placeholder)</h2>
   <table>
     <tr><th>Método</th><td class="method get">GET</td></tr>
-    <tr><th>Ruta</th><td class="path">/v1/billing/summary</td></tr>
+    <tr><th>Ruta</th><td class="path">/api/v1/billing/summary</td></tr>
     <tr><th>Auth</th><td>Bearer</td></tr>
     <tr><th>200</th><td><code>subscription: null</code>, <code>payment_methods: []</code>, <code>invoices: []</code></td></tr>
   </table>
@@ -213,7 +213,7 @@
   <h2>5. Búsqueda</h2>
   <table>
     <tr><th>Método</th><td class="method get">GET</td></tr>
-    <tr><th>Ruta</th><td class="path">/v1/search?q=...</td></tr>
+    <tr><th>Ruta</th><td class="path">/api/v1/search?q=...</td></tr>
     <tr><th>Auth</th><td>Bearer</td></tr>
     <tr><th>Query</th><td><code>q</code> — texto; si vacío, arrays vacíos</td></tr>
     <tr><th>200</th><td><code>data.users</code> (UserResource), <code>data.posts</code> (PostResource), <code>data.news</code></td></tr>
@@ -222,7 +222,7 @@
   <h2>6. Seguridad extra en perfil</h2>
   <table>
     <tr><th>Método</th><td class="method patch">PUT</td></tr>
-    <tr><th>Ruta</th><td class="path">/v1/user/{user}</td></tr>
+    <tr><th>Ruta</th><td class="path">/api/v1/user/{user}</td></tr>
     <tr><th>Auth</th><td>Bearer — solo el usuario cuyo id coincide con <code>{user}</code></td></tr>
     <tr><th>Body</th><td>Según validación del backend (<code>profile.*</code>, etc.)</td></tr>
   </table>
