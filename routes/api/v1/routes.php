@@ -70,3 +70,11 @@ Route::prefix('search')
     ->group(
         base_path('routes/api/v1/search.php')
     );
+
+Route::prefix('jobs')
+    ->as('jobs:')
+    ->middleware(['auth:sanctum'])
+    ->group(
+        base_path('routes/api/v1/job.php')
+    );
+

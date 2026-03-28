@@ -19,6 +19,12 @@ class ProfileFactory extends Factory
             'phone_number' => $this->faker->phoneNumber(),
             'bio' => $this->faker->word(),
             'birth_date' => Carbon::now(),
+            'country_id' => function () {
+                return \App\Models\Country::inRandomOrder()->first()->id;
+            },
+            'sport_id' => function () {
+                return \App\Models\Sport::inRandomOrder()->first()->id;
+            },
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ];

@@ -17,6 +17,12 @@ Route::post('/{driver}/callback', SocialAuthenticatedController::class)
 Route::post('verify/opt', VerifyOptController::class)
     ->name('verify.opt');
 
+Route::post('forgot-password', \App\Http\Controllers\V1\Auth\ForgotPasswordController::class)
+    ->name('password.email');
+
+Route::post('reset-password', \App\Http\Controllers\V1\Auth\ResetPasswordController::class)
+    ->name('password.reset');
+
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/logout', [AuthenticatedController::class, 'destroy'])
         ->name('logout');

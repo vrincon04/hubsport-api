@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hubsport API v1 — Referencia de endpoints (nuevos)</title>
+  <style>
+    :root {
+      --text: #1a1a1a;
+      --muted: #5c5c5c;
+      --border: #ddd;
+      --code-bg: #f4f4f5;
+      --accent: #2563eb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5;
+      color: var(--text);
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+      font-size: 14px;
+    }
+    h1 { font-size: 1.75rem; margin-top: 0; border-bottom: 2px solid var(--text); padding-bottom: 0.5rem; }
+    h2 { font-size: 1.2rem; margin-top: 2rem; color: var(--accent); }
+    h3 { font-size: 1rem; margin-top: 1.25rem; }
+    p, li { color: var(--muted); }
+    .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+    code, pre {
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      font-size: 0.85em;
+      background: var(--code-bg);
+      border-radius: 4px;
+    }
+    code { padding: 0.15em 0.4em; }
+    pre {
+      padding: 0.75rem 1rem;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.75rem 0 1.25rem;
+      font-size: 0.9rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.65rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f9fafb; font-weight: 600; }
+    .method { font-weight: 700; white-space: nowrap; }
+    .method.get { color: #16a34a; }
+    .method.post { color: #ca8a04; }
+    .method.delete { color: #dc2626; }
+    .method.patch { color: #9333ea; }
+    .path { font-family: ui-monospace, monospace; word-break: break-all; }
+    .note {
+      background: #eff6ff;
+      border-left: 4px solid var(--accent);
+      padding: 0.75rem 1rem;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+    @media print {
+      body { padding: 1rem; max-width: 100%; }
+      h2 { page-break-after: avoid; }
+      table, pre { page-break-inside: avoid; }
+      a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 0.8em; color: #666; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Hubsport API v1 — Endpoints nuevos</h1>
+  <p class="meta">
+    Base URL de ejemplo: <code>https://yordy.shop/v1</code><br />
+    Cabeceras habituales: <code>Accept: application/json</code> · Rutas protegidas: <code>Authorization: Bearer &lt;token&gt;</code>
+  </p>
+
+  <div class="note">
+    <strong>PDF:</strong> en el navegador, menú Archivo → Imprimir → Destino “Guardar como PDF”.
+  </div>
+
+  <h2>1. Stories — <span class="path">/stories</span></h2>
+
+  <h3>Listar stories</h3>
+  <table>
+    <tr><th>Método</th><td class="method get">GET</td></tr>
+    <tr><th>Ruta</th><td class="path">/v1/stories</td></tr>
+    <tr><th>Auth</th><td>Bearer (Sanctum)</td></tr>
+    <tr><th>Query / Body</th><td>Ninguno</td></tr>
+    <tr><th>200</th><td><code>{ "data": { "&lt;user_ulid&gt;": [ …stories… ], … } }</code> (agrupado por usuario; stories activas, tuyas + seguidos)</td></tr>
+  </table>
+
+  <h3>Crear story</h3>
+  <table>
+    <tr><th>Método</th><td class="method post">POST</td></tr>
+    <tr><th>Ruta</th><td class="path">/v1/stories</td></tr>
+    <tr><th>Auth</th><td>Bearer</td></tr>
+    <tr><th>Content-Type</th><td><code>application/json</code></td></tr>
+    <tr><th>Body JSON</th><td>
+      <ul>
+        <li><code>media_url</code> (string, requerido) — URL válida del medio</li>
+        <li><code>type</code> (string, requerido) — <code>image</code> o <code>video</code></li>
+      </ul>
+    </td></tr>
+    <tr><th>201</th><td><code>{ "message", "data": { story } }</code> — expira ~24 h</td></tr>
+    <tr><th>422</th><td>Validación</td></tr>
+  </table>
+
+  <h2>2. Connections (solicitudes) — <span class="path">/connections</span></h2>
+
+  <h3>Listar conexiones aceptadas</h3>
+  <table>
+    <tr><th>Método</th><td class="method get">GET</td></tr>
+    <tr><th>Ruta</th><td class="path">/v1/connections</td></tr>
+    <tr><th>Auth</th><td>Bearer</td></tr>
+    <tr><th>200</th><td><code>{ "message", "data": [ ConnectionResource ] }</code></td></tr>
+  </table>
+
+  <h3>Solicitudes entrantes (pendientes)</h3>
+  <table>
+    <tr><th>Método</th><td class="method get">GET</td></tr>
+    <tr><th>Ruta</th><td class="path">/v1/connections/requests/incoming</td></tr>
+    <tr><th>Auth</th><td>Bearer</td></tr>
+    <tr><th>200</th><td>Lista con <code>sender</code> cargado (UserResource)</td></tr>
+  </table>
+
+  <h3>Solicitudes salientes (pendientes)</h3>
+  <table>
+    <tr><th>Método</th><td class="method get">GET</td></tr>
+    <tr><th>Ruta</th><td class="path">/v1/connections/requests/outgoing</td></tr>
+    <tr><th>Auth</th><td>Bearer</td></tr>
+    <tr><th>200</th><td>Lista con <code>recipient</code> cargado</td></tr>
+  </table>
+
+  <h3>Enviar solicitud</h3>
+  <table>
+    <tr><th>Método</th><td class="method post">POST</td></tr>
+    <tr><th>Ruta</th><td class="path">/v1/connections</td></tr>
+    <tr><th>Auth</th><td>Bearer</td></tr>
+    <tr><th>Body JSON</th><td><code>{ "connected_user_id": "&lt;ULID usuario&gt;" }</code> — debe existir en <code>users.id</code></td></tr>
+    <tr><th>201 / 200</th><td>Solicitud creada o reabierta desde <code>rejected</code></td></tr>
+    <tr><th>409</th><td>Ya conectados, ya pendiente, o el otro ya te envió solicitud (<code>connection_id</code>)</td></tr>
+    <tr><th>422</th><td>Contigo mismo u otras validaciones</td></tr>
+  </table>
+
+  <h3>Aceptar solicitud</h3>
+  <table>
+    <tr><th>Método</th><td class="method post">POST</td></tr>
+    <tr><th>Ruta</th><td class="path">/v1/connections/{connection}/accept</td></tr>
+    <tr><th>Path</th><td><code>connection</code> = id numérico (tabla <code>connections</code>)</td></tr>
+    <tr><th>Auth</th><td>Bearer — solo el destinatario (<code>connected_user_id</code>)</td></tr>
+    <tr><th>200</th><td>Estado <code>accepted</code></td></tr>
+    <tr><th>403 / 422</th><td>No autorizado o ya no está <code>pending</code></td></tr>
+  </table>
+
+  <h3>Rechazar solicitud</h3>
+  <table>
+    <tr><th>Método</th><td class="method post">POST</td></tr>
+    <tr><th>Ruta</th><td class="path">/v1/connections/{connection}/reject</td></tr>
+    <tr><th>Auth</th><td>Bearer — solo destinatario</td></tr>
+    <tr><th>200</th><td>Estado <code>rejected</code></td></tr>
+  </table>
+
+  <h3>Eliminar / cancelar</h3>
+  <table>
+    <tr><th>Método</th><td class="method delete">DELETE</td></tr>
+    <tr><th>Ruta</th><td class="path">/v1/connections/{connection}</td></tr>
+    <tr><th>Auth</th><td>Bearer — debe participar en la conexión</td></tr>
+    <tr><th>200</th><td>Cancelar saliente, descartar entrante, unfriend si <code>accepted</code>, borrar <code>rejected</code></td></tr>
+  </table>
+
+  <p><strong>ConnectionResource (resumen):</strong> <code>id</code>, <code>status</code> (<code>pending</code>|<code>accepted</code>|<code>rejected</code>), fechas, y opcionalmente <code>sender</code> / <code>recipient</code> (UserResource).</p>
+
+  <h2>3. Meta — ayuda y contacto</h2>
+
+  <h3>Ayuda / FAQ (estructura)</h3>
+  <table>
+    <tr><th>Método</th><td class="method get">GET</td></tr>
+    <tr><th>Ruta</th><td class="path">/v1/help</td></tr>
+    <tr><th>Auth</th><td>No</td></tr>
+    <tr><th>200</th><td><code>{ "message", "data": { "sections": [ { "id", "title", "articles": [] } ] } }</code></td></tr>
+  </table>
+
+  <h3>Formulario de contacto</h3>
+  <table>
+    <tr><th>Método</th><td class="method post">POST</td></tr>
+    <tr><th>Ruta</th><td class="path">/v1/contact</td></tr>
+    <tr><th>Auth</th><td>Opcional. Sin sesión: <code>email</code> obligatorio.</td></tr>
+    <tr><th>Body JSON</th><td>
+      <ul>
+        <li><code>subject</code> (requerido, max 200)</li>
+        <li><code>message</code> (requerido, max 5000)</li>
+        <li><code>email</code> — requerido sin token; opcional con token</li>
+      </ul>
+    </td></tr>
+    <tr><th>202</th><td>Mensaje recibido (registro en log del servidor)</td></tr>
+  </table>
+
+  <h2>4. Billing (placeholder)</h2>
+  <table>
+    <tr><th>Método</th><td class="method get">GET</td></tr>
+    <tr><th>Ruta</th><td class="path">/v1/billing/summary</td></tr>
+    <tr><th>Auth</th><td>Bearer</td></tr>
+    <tr><th>200</th><td><code>subscription: null</code>, <code>payment_methods: []</code>, <code>invoices: []</code></td></tr>
+  </table>
+
+  <h2>5. Búsqueda</h2>
+  <table>
+    <tr><th>Método</th><td class="method get">GET</td></tr>
+    <tr><th>Ruta</th><td class="path">/v1/search?q=...</td></tr>
+    <tr><th>Auth</th><td>Bearer</td></tr>
+    <tr><th>Query</th><td><code>q</code> — texto; si vacío, arrays vacíos</td></tr>
+    <tr><th>200</th><td><code>data.users</code> (UserResource), <code>data.posts</code> (PostResource), <code>data.news</code></td></tr>
+  </table>
+
+  <h2>6. Seguridad extra en perfil</h2>
+  <table>
+    <tr><th>Método</th><td class="method patch">PUT</td></tr>
+    <tr><th>Ruta</th><td class="path">/v1/user/{user}</td></tr>
+    <tr><th>Auth</th><td>Bearer — solo el usuario cuyo id coincide con <code>{user}</code></td></tr>
+    <tr><th>Body</th><td>Según validación del backend (<code>profile.*</code>, etc.)</td></tr>
+  </table>
+
+  <p class="meta" style="margin-top: 3rem;">
+    Documento generado para el proyecto Hubsport API. Rutas adicionales (auth, posts, chat, sport, etc.) siguen en el código bajo <code>routes/api/v1/</code>.
+  </p>
+
+</body>
+</html>
