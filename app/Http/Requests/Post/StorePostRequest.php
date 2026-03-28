@@ -10,8 +10,13 @@ use Illuminate\Validation\Validator;
 
 class StorePostRequest extends FormRequest
 {
+    private const IMAGE_MIMES = 'mimetypes:image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,video/mp4';
+
     public function rules(): array
     {
+        $oneFile = ['sometimes', 'file', self::IMAGE_MIMES, 'max:25600'];
+        $eachFile = ['file', self::IMAGE_MIMES, 'max:25600'];
+
         return [
             'title' => [
                 'required',
@@ -31,23 +36,20 @@ class StorePostRequest extends FormRequest
             'gallery' => [
                 'sometimes',
             ],
-            'gallery.*' => [
-                'file',
-                'mimetypes:image/jpeg,image/jpg,image/png,image/webp,video/mp4',
-                'max:25600',
-            ],
-            'image' => [
-                'sometimes',
-                'file',
-                'mimetypes:image/jpeg,image/jpg,image/png,image/webp,video/mp4',
-                'max:25600',
-            ],
-            'photo' => [
-                'sometimes',
-                'file',
-                'mimetypes:image/jpeg,image/jpg,image/png,image/webp,video/mp4',
-                'max:25600',
-            ],
+            'gallery.*' => $eachFile,
+            'images' => ['sometimes', 'array'],
+            'images.*' => $eachFile,
+            'photos' => ['sometimes', 'array'],
+            'photos.*' => $eachFile,
+            'files' => ['sometimes', 'array'],
+            'files.*' => $eachFile,
+            'image' => $oneFile,
+            'photo' => $oneFile,
+            'picture' => $oneFile,
+            'file' => $oneFile,
+            'media' => $oneFile,
+            'attachment' => $oneFile,
+            'upload' => $oneFile,
         ];
     }
 
