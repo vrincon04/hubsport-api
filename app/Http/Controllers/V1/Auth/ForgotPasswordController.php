@@ -5,11 +5,14 @@ namespace App\Http\Controllers\V1\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Models\EmailVerification;
+use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+
 
 class ForgotPasswordController extends Controller
 {
-    public function __invoke(ForgotPasswordRequest $request)
+    public function __invoke(ForgotPasswordRequest $request): JsonResponse
+
     {
         // Generate a 6-digit OTP
         $code = rand(100000, 999999);

@@ -154,4 +154,37 @@ class User extends Authenticatable implements MustVerifyOpt, HasMedia
     {
         return $this->hasMany(Story::class);
     }
+
+    public function getConnectionStatusWith(User $other): string
+    {
+        $connection = Connection::query()
+            ->where(function ($q) use ($other) {
+                $q->where('user_id', $this->id)->where('connected_user_id', $other->id);
+            })
+            ->orWhere(function ($q) use ($other) {
+                $q->where('user_id', $other->id)->where('connected_user_id', $this->id);
+            })
+            ->first();
+
+        if (!$connection) return 'none';
+        if ($connection->status === 'accepted') return 'accepted';
+        if ($connection->status === 'pending') {
+            return $connection->user_id === $this->id ? 'pending_outgoing' : 'pending_incoming';
+        }
+        return 'none';
+    }
+
+    public function getSportsStats(): array
+    {
+        // Mocking some stats for the premium UI grid
+        // Ideally these would come from the MatchResult table or a specialized UserStats table
+        return [
+            ['value' => '2024', 'label' => 'Temporada'],
+            ['value' => (string)rand(1, 100), 'label' => 'Lugar'],
+            ['value' => (string)rand(10, 500), 'label' => 'Pts'],
+            ['value' => (string)$this->posts()->count() + 10, 'label' => 'Partidas'],
+            ['value' => (string)rand(5, 50), 'label' => 'Victorias'],
+            ['value' => (string)rand(0, 10), 'label' => 'Poles'],
+        ];
+    }
 }

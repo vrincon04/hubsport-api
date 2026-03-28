@@ -7,12 +7,15 @@ use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Models\EmailVerification;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
+
 class ResetPasswordController extends Controller
 {
-    public function __invoke(ResetPasswordRequest $request)
+    public function __invoke(ResetPasswordRequest $request): JsonResponse
+
     {
         $verification = EmailVerification::where('email', $request->email)
                                         ->where('code', $request->code)

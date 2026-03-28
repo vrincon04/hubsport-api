@@ -12,7 +12,9 @@ class DatabaseSeeder extends Seeder
      * Seed the application's database.
      *
      * Orden: roles y deportes → países mínimos si faltan → 10 usuarios Faker
-     * (SampleUsersSeeder) → dos cuentas fijas demo/prueba (DemoUsersSeeder).
+     * (SampleUsersSeeder) → demo/prueba (DemoUsersSeeder) → chat, conexiones,
+     * historias, notificaciones, ajustes, noticias, resultados, saved jobs,
+     * redes sociales, email_verifications y avatares (DemoContentSeeder).
      */
     public function run(): void
     {
@@ -33,5 +35,6 @@ class DatabaseSeeder extends Seeder
 
         $this->call(SampleUsersSeeder::class);
         $this->call(DemoUsersSeeder::class);
+        $this->call(DemoContentSeeder::class);
     }
 }

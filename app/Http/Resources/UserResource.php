@@ -25,7 +25,11 @@ class UserResource extends JsonResource
             'following_count' => $this->following_count ?? $this->following()->count(),
             'posts_count' => $this->posts_count ?? $this->posts()->count(),
 
+            'connection_status' => $request->user() ? $request->user()->getConnectionStatusWith($this->resource) : 'none',
+            'stats' => $this->getSportsStats(),
+
             'profile' => new ProfileResource($this->whenLoaded('profile')),
+
             'avatar' => new MediaResource($this->whenLoaded('avatar')),
         ];
     }
