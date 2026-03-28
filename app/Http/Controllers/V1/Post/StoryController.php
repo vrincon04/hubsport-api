@@ -35,12 +35,20 @@ class StoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'media_url' => 'required|url',
             'type' => 'required|in:image,video',
+            'media_url' => 'required_without:media|nullable|url',
+            'media' => 'required_without:media_url|nullable|file|mimetypes:image/jpeg,image/jpg,image/png,image/webp,video/mp4|max:25600',
         ]);
 
+        $mediaUrl = $request->input('media_url');
+
+        if ($request->hasFile('media')) {
+            $path = $request->file('media')->store('stories', 'public');
+            $mediaUrl = asset('storage/'.$path);
+        }
+
         $story = Auth::user()->stories()->create([
-            'media_url' => $request->media_url,
+            'media_url' => $mediaUrl,
             'type' => $request->type,
             'expires_at' => now()->addHours(24),
         ]);
