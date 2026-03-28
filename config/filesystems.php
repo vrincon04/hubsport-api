@@ -39,7 +39,11 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            // MEDIA_URL: URL completa hasta /storage (ej. https://yordy.shop/storage). Si no, APP_URL + /storage.
+            'url' => rtrim(
+                env('MEDIA_URL') ?: (rtrim(env('APP_URL', 'http://localhost'), '/').'/storage'),
+                '/'
+            ),
             'visibility' => 'public',
             'throw' => false,
         ],
@@ -57,7 +61,7 @@ return [
         ],
         'media' => [
             'driver' => 'local',
-            'root'   => public_path('media'),
+            'root' => public_path('media'),
         ],
 
     ],

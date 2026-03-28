@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1\Post;
 
 use App\Http\Controllers\Controller;
 use App\Models\Story;
+use App\Support\PublicDiskUrl;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -44,7 +45,7 @@ class StoryController extends Controller
 
         if ($request->hasFile('media')) {
             $path = $request->file('media')->store('stories', 'public');
-            $mediaUrl = asset('storage/'.$path);
+            $mediaUrl = PublicDiskUrl::forRelativePath($path);
         }
 
         $story = Auth::user()->stories()->create([
