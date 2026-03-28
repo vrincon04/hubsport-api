@@ -20,11 +20,18 @@ class Profile extends Model
      */
     protected $fillable = [
         'user_id',
+        'country_id',
+        'sport_id',
         'first_name',
         'last_name',
         'phone_number',
         'bio',
-        'birth_date'
+        'birth_date',
+        'position',
+        'stats',
+        'experience',
+        'achievements',
+        'education',
     ];
 
     /**
@@ -33,13 +40,15 @@ class Profile extends Model
      * @return array<string, string>
      */
     protected $casts = [
-        'birth_date' => 'datetime:Y-m-d'
+        'birth_date' => 'datetime:Y-m-d',
+        'stats' => 'array',
+        'experience' => 'array',
+        'achievements' => 'array',
+        'education' => 'array',
     ];
 
     /**
      * Relationship of user.
-     *
-     * @return BelongsTo
      */
     public function user(): BelongsTo
     {
@@ -58,8 +67,6 @@ class Profile extends Model
 
     /**
      * Get the user's full name.
-     *
-     * @return Attribute
      */
     protected function fullName(): Attribute
     {

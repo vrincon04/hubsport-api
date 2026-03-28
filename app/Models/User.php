@@ -176,6 +176,11 @@ class User extends Authenticatable implements MustVerifyOpt, HasMedia
 
     public function getSportsStats(): array
     {
+        $fromProfile = $this->profile?->stats;
+        if (is_array($fromProfile) && $fromProfile !== []) {
+            return $fromProfile;
+        }
+
         // Mocking some stats for the premium UI grid
         // Ideally these would come from the MatchResult table or a specialized UserStats table
         return [

@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Sport;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class SportSeeder extends Seeder
@@ -24,5 +23,9 @@ class SportSeeder extends Seeder
         Sport::create(['name' => 'balonmano']);
         Sport::create(['name' => 'hockey']);
         Sport::create(['name' => 'rugby']);
+        Sport::create([
+            'name' => 'Fórmula 1',
+            'description' => 'Automovilismo de velocidad',
+        ]);
     }
 }

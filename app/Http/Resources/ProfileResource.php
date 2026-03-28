@@ -17,7 +17,12 @@ class ProfileResource extends JsonResource
             'phone_number' => $this->phone_number,
             'bio' => $this->bio,
             'birth_date' => $this->birth_date,
+            'position' => $this->position,
             'full_name' => $this->full_name,
+
+            'experience' => $this->experience,
+            'achievements' => $this->achievements,
+            'education' => $this->education,
 
             'user' => new UserResource($this->whenLoaded('user')),
             'country' => new CountryResource($this->whenLoaded('country')),
