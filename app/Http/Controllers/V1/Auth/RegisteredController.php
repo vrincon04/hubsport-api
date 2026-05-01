@@ -20,7 +20,13 @@ class RegisteredController extends Controller
         try {
             $user = CreateUserAction::run($request->safe()->all());
 
-            //event(new Registered($user));
+            event(new Registered($user));
+
+            if ($request->hasFile('avatar')) {
+                $user->addMediaFromRequest('avatar')->toMediaCollection('avatar');
+            }
+
+            $user->load(['profile.country', 'profile.sport', 'avatar']);
 
             Auth::login($user);
 

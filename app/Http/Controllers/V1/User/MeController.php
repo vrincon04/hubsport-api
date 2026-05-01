@@ -10,7 +10,7 @@ class MeController extends Controller
     public function __invoke()
     {
         $user = auth()->user();
-        $user->load(['profile', 'avatar']);
+        $user->load(['profile.country', 'profile.sport', 'avatar']);
 
         return new UserResource($user);
     }

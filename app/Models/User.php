@@ -155,6 +155,21 @@ class User extends Authenticatable implements MustVerifyOpt, HasMedia
         return $this->hasMany(Story::class);
     }
 
+    public function receivedReferenceRequests(): HasMany
+    {
+        return $this->hasMany(ReferenceRequest::class, 'recipient_id');
+    }
+
+    public function sentReferenceRequests(): HasMany
+    {
+        return $this->hasMany(ReferenceRequest::class, 'requester_id');
+    }
+
+    public function sportsReferences(): HasMany
+    {
+        return $this->hasMany(SportsReference::class, 'subject_user_id');
+    }
+
     public function getConnectionStatusWith(User $other): string
     {
         $connection = Connection::query()
@@ -181,15 +196,11 @@ class User extends Authenticatable implements MustVerifyOpt, HasMedia
             return $fromProfile;
         }
 
-        // Mocking some stats for the premium UI grid
-        // Ideally these would come from the MatchResult table or a specialized UserStats table
         return [
-            ['value' => '2024', 'label' => 'Temporada'],
-            ['value' => (string)rand(1, 100), 'label' => 'Lugar'],
-            ['value' => (string)rand(10, 500), 'label' => 'Pts'],
-            ['value' => (string)$this->posts()->count() + 10, 'label' => 'Partidas'],
-            ['value' => (string)rand(5, 50), 'label' => 'Victorias'],
-            ['value' => (string)rand(0, 10), 'label' => 'Poles'],
+            ['value' => (string) $this->posts()->count(), 'label' => 'Publicaciones'],
+            ['value' => (string) $this->followers()->count(), 'label' => 'Seguidores'],
+            ['value' => (string) $this->following()->count(), 'label' => 'Conexiones'],
+            ['value' => (string) $this->comments()->count(), 'label' => 'Comentarios'],
         ];
     }
 }

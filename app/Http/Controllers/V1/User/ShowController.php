@@ -10,7 +10,7 @@ class ShowController extends Controller
 {
     public function __invoke(User $user)
     {
-        $user->load(['profile', 'avatar']);
+        $user->load(['profile.country', 'profile.sport', 'avatar']);
 
         return new UserResource($user);
     }

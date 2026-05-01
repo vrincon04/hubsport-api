@@ -17,16 +17,18 @@ class CreateUserAction
      */
     public function handle(array $data): User
     {
+        $profile = $data['profile'];
+        $name = $data['name'] ?? trim("{$profile['first_name']} {$profile['last_name']}");
+
         $user = User::firstOrCreate([
             'email' => $data['email'],
-            'name' => $data['profile']['first_name']
-        ], $data);
+        ], [
+            'name' => $name,
+            'password' => $data['password'],
+        ]);
 
-        if (isset($data['profile'])) {
-            $profileData = $data['profile'];
-            $user->profile()->updateOrCreate(['user_id' => $user->id], $profileData);
-        }
+        $user->profile()->updateOrCreate(['user_id' => $user->id], $profile);
 
-        return $user;
+        return $user->load(['profile.country', 'profile.sport', 'avatar']);
     }
 }

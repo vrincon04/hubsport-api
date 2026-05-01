@@ -19,12 +19,13 @@ class UpdateUserAction
      */
     public function handle(UpdateUserRequest $request, User $user): User
     {
-        $user->update($request->safe()->all());
+        $safe = $request->safe()->all();
+        $user->update(collect($safe)->except('profile')->all());
 
         if ($request->has('profile')) {
-            $user->profile()->update($request->input('profile'));
+            $user->profile()->updateOrCreate(['user_id' => $user->id], $request->input('profile'));
         }
-        $user->refresh();
+        $user->refresh()->load(['profile.country', 'profile.sport', 'avatar']);
 
         return $user;
     }

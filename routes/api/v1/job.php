@@ -15,8 +15,12 @@ Route::get('/my-saved', [JobOfferController::class, 'mySaved'])
     ->name('mySaved');
 Route::get('/{id}', [JobOfferController::class, 'show'])
     ->name('show');
+Route::get('/{id}/applicants', [JobOfferController::class, 'applicants'])
+    ->name('applicants');
 Route::post('/{id}/apply', [JobOfferController::class, 'apply'])
     ->name('apply');
+Route::delete('/{id}/apply', [JobOfferController::class, 'cancelApplication'])
+    ->name('cancelApplication');
 Route::post('/{id}/save', [JobOfferController::class, 'save'])
     ->name('save');
 Route::delete('/{id}/unsave', [JobOfferController::class, 'unsave'])

@@ -78,3 +78,23 @@ Route::prefix('jobs')
         base_path('routes/api/v1/job.php')
     );
 
+Route::prefix('references')
+    ->as('references:')
+    ->middleware(['auth:sanctum'])
+    ->group(
+        base_path('routes/api/v1/reference.php')
+    );
+
+Route::prefix('events')
+    ->as('events:')
+    ->middleware(['auth:sanctum'])
+    ->group(
+        base_path('routes/api/v1/event.php')
+    );
+
+Route::prefix('sponsorships')
+    ->as('sponsorships:')
+    ->middleware(['auth:sanctum'])
+    ->group(
+        base_path('routes/api/v1/sponsorship.php')
+    );

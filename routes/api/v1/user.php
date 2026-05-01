@@ -12,6 +12,12 @@ Route::get('/settings', [\App\Http\Controllers\V1\User\SettingsController::class
     ->name('settings.show');
 Route::patch('/settings', [\App\Http\Controllers\V1\User\SettingsController::class , 'update'])
     ->name('settings.update');
+Route::post('/settings/change-password', [\App\Http\Controllers\V1\User\SettingsController::class , 'changePassword'])
+    ->name('settings.changePassword');
+Route::get('/settings/sessions', [\App\Http\Controllers\V1\User\SettingsController::class , 'sessions'])
+    ->name('settings.sessions');
+Route::delete('/settings/sessions/{id}', [\App\Http\Controllers\V1\User\SettingsController::class , 'destroySession'])
+    ->name('settings.sessions.destroy');
 
 Route::get('/notifications', [\App\Http\Controllers\V1\User\NotificationController::class , 'index'])
     ->name('notifications.index');
