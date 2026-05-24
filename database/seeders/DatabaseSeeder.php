@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
         if (Country::count() === 0) {
             Country::insert([
                 ['id' => (string) Str::ulid(), 'name' => 'Argentina', 'code' => 'AR'],
+                ['id' => (string) Str::ulid(), 'name' => 'República Dominicana', 'code' => 'DO'],
                 ['id' => (string) Str::ulid(), 'name' => 'Estados Unidos', 'code' => 'US'],
                 ['id' => (string) Str::ulid(), 'name' => 'España', 'code' => 'ES'],
                 ['id' => (string) Str::ulid(), 'name' => 'México', 'code' => 'MX'],
