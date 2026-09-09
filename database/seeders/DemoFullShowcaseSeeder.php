@@ -83,6 +83,7 @@ class DemoFullShowcaseSeeder extends Seeder
             'name' => $name,
             'password' => Hash::make('password'),
             'email_verified_at' => '2026-01-15 12:00:00',
+            'is_demo' => true,
         ])->save();
 
         return $user;

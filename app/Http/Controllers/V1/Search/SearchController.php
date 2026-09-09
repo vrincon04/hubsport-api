@@ -45,8 +45,11 @@ class SearchController extends Controller
             ]);
         }
 
+        $viewer = $request->user();
+
         $users = User::query()
             ->with(['profile.country', 'profile.sport', 'avatar'])
+            ->visibleTo($viewer)
             ->when($query !== '', function ($builder) use ($query) {
                 $builder->where(function ($q) use ($query) {
                     $q->where('name', 'like', "%{$query}%")
@@ -71,6 +74,7 @@ class SearchController extends Controller
             ->get();
 
         $posts = Post::query()
+            ->visibleTo($viewer)
             ->when($query !== '', fn ($builder) => $builder->where('body', 'like', "%{$query}%"))
             ->with(['user.profile', 'user.avatar'])
             ->limit(10)
@@ -83,6 +87,7 @@ class SearchController extends Controller
 
         $jobs = JobOffer::query()
             ->with(['user.profile', 'user.avatar', 'sport'])
+            ->visibleTo($viewer)
             ->when($query !== '', function ($builder) use ($query) {
                 $builder->where(function ($q) use ($query) {
                     $q->where('title', 'like', "%{$query}%")
@@ -108,6 +113,7 @@ class SearchController extends Controller
 
         $sponsorships = Sponsorship::query()
             ->with(['user.profile', 'user.avatar', 'sport'])
+            ->visibleTo($viewer)
             ->when($query !== '', function ($builder) use ($query) {
                 $builder->where(function ($q) use ($query) {
                     $q->where('brand_name', 'like', "%{$query}%")
@@ -131,6 +137,7 @@ class SearchController extends Controller
 
         $events = Event::query()
             ->with(['user.profile', 'user.avatar', 'sport'])
+            ->visibleTo($viewer)
             ->when($query !== '', function ($builder) use ($query) {
                 $builder->where(function ($q) use ($query) {
                     $q->where('name', 'like', "%{$query}%")

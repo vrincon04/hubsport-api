@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\ReferenceRequest;
 use App\Models\SportsReference;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,8 +38,14 @@ class ReferenceController extends Controller
         ]);
     }
 
-    public function publishedForUser(string $userId): JsonResponse
+    public function publishedForUser(Request $request, string $userId): JsonResponse
     {
+        $subject = User::query()->find($userId);
+        abort_if(
+            $subject && ! $subject->isVisibleTo($request->user()),
+            Response::HTTP_NOT_FOUND
+        );
+
         $references = SportsReference::with(['author.profile.country', 'author.profile.sport', 'author.avatar'])
             ->where('subject_user_id', $userId)
             ->where('status', 'published')

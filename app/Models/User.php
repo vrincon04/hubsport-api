@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Contracts\Auth\MustVerifyOpt;
 use App\Traits\Like\InteractsWithLike;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -62,7 +63,25 @@ class User extends Authenticatable implements MustVerifyOpt, HasMedia
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_demo' => 'boolean',
         ];
+    }
+
+    /**
+     * Las cuentas demo solo son visibles dentro de una sesión demo.
+     */
+    public function scopeVisibleTo(Builder $query, ?self $viewer): Builder
+    {
+        if ($viewer?->is_demo) {
+            return $query;
+        }
+
+        return $query->where('is_demo', false);
+    }
+
+    public function isVisibleTo(?self $viewer): bool
+    {
+        return ! $this->is_demo || (bool) $viewer?->is_demo;
     }
 
     /**

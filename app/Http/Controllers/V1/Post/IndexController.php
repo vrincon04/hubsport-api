@@ -12,6 +12,7 @@ class IndexController extends Controller
     {
         $post = Post::with(['user.profile', 'user.avatar', 'likes.user.avatar', 'likes.user.profile', 'gallery'])
             ->withCount(['likes'])
+            ->visibleTo(request()->user())
             ->when(request('user_id'), function ($query) {
                 return $query->where('user_id', request('user_id'));
             })

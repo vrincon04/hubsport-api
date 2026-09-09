@@ -17,6 +17,7 @@ class EventController extends Controller
     {
         $events = Event::query()
             ->with(['user.profile', 'user.avatar', 'sport'])
+            ->visibleTo($request->user())
             ->when($request->filled('sport_id'), fn ($query) => $query->where('sport_id', $request->query('sport_id')))
             ->when($request->filled('country'), fn ($query) => $query->where('country', 'like', '%'.$request->query('country').'%'))
             ->when($request->filled('city'), fn ($query) => $query->where('city', 'like', '%'.$request->query('city').'%'))
@@ -64,14 +65,16 @@ class EventController extends Controller
 
     public function show(string $id): JsonResponse
     {
-        $event = Event::with(['user.profile', 'user.avatar', 'sport'])->findOrFail($id);
+        $event = Event::with(['user.profile', 'user.avatar', 'sport'])
+            ->visibleTo(Auth::user())
+            ->findOrFail($id);
 
         return response()->json($event);
     }
 
     public function participate(string $id): JsonResponse
     {
-        $event = Event::findOrFail($id);
+        $event = Event::query()->visibleTo(Auth::user())->findOrFail($id);
         $participant = EventParticipant::firstOrCreate([
             'event_id' => $event->id,
             'user_id' => Auth::id(),
@@ -89,7 +92,7 @@ class EventController extends Controller
 
     public function save(string $id): JsonResponse
     {
-        $event = Event::findOrFail($id);
+        $event = Event::query()->visibleTo(Auth::user())->findOrFail($id);
 
         SavedEvent::firstOrCreate([
             'event_id' => $event->id,

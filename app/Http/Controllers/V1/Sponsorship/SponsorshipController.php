@@ -15,6 +15,7 @@ class SponsorshipController extends Controller
     {
         $sponsorships = Sponsorship::query()
             ->with(['user.profile', 'user.avatar', 'sport'])
+            ->visibleTo($request->user())
             ->when($request->filled('sport_id'), fn ($query) => $query->where('sport_id', $request->query('sport_id')))
             ->when($request->filled('q'), function ($query) use ($request) {
                 $term = $request->query('q');
@@ -56,7 +57,9 @@ class SponsorshipController extends Controller
     public function show(string $id): JsonResponse
     {
         return response()->json(
-            Sponsorship::with(['user.profile', 'user.avatar', 'sport'])->findOrFail($id)
+            Sponsorship::with(['user.profile', 'user.avatar', 'sport'])
+                ->visibleTo(Auth::user())
+                ->findOrFail($id)
         );
     }
 }

@@ -17,7 +17,7 @@ class JobOfferController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $query = JobOffer::with(['user', 'sport'])->latest();
+        $query = JobOffer::with(['user', 'sport'])->visibleTo($request->user())->latest();
         
         if ($request->filled('country')) {
             $query->where('location', 'like', '%' . $request->country . '%');
@@ -73,7 +73,7 @@ class JobOfferController extends Controller
 
     public function show($id): JsonResponse
     {
-        $job = JobOffer::with(['user', 'sport'])->findOrFail($id);
+        $job = JobOffer::with(['user', 'sport'])->visibleTo(Auth::user())->findOrFail($id);
         return response()->json(['data' => $this->serializeJob($job)], Response::HTTP_OK);
     }
 
@@ -84,7 +84,7 @@ class JobOfferController extends Controller
             'message' => 'nullable|string|max:1000',
         ]);
 
-        $job = JobOffer::findOrFail($id);
+        $job = JobOffer::query()->visibleTo(Auth::user())->findOrFail($id);
 
         abort_if($job->user_id === Auth::id(), Response::HTTP_FORBIDDEN, 'No puedes aplicar a tu propio empleo.');
 
@@ -115,7 +115,7 @@ class JobOfferController extends Controller
 
     public function save(Request $request, $id): JsonResponse
     {
-        $job = JobOffer::findOrFail($id);
+        $job = JobOffer::query()->visibleTo(Auth::user())->findOrFail($id);
 
         SavedJob::firstOrCreate([
             'job_offer_id' => $job->id,

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1\Post;
 
 use App\Http\Controllers\Controller;
 use App\Models\Story;
+use App\Models\User;
 use App\Support\PublicDiskUrl;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,9 +18,14 @@ class StoryController extends Controller
     {
         $followingIds = Auth::user()->following()->pluck('connected_user_id');
 
+        $visibleAuthorIds = User::query()
+            ->whereIn('id', $followingIds->push(Auth::id()))
+            ->visibleTo(Auth::user())
+            ->pluck('id');
+
         // Include own stories and followed users' stories
         $stories = Story::active()
-            ->whereIn('user_id', $followingIds->push(Auth::id()))
+            ->whereIn('user_id', $visibleAuthorIds)
             ->with('user:id,name')
             ->latest()
             ->get()

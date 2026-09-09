@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Contracts\Like\Likeable;
+use App\Models\Concerns\HidesDemoContent;
 use App\Traits\Like\HasLike;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,6 +24,7 @@ class Post extends Model implements HasMedia, Likeable
     use HasFactory;
     use HasSlug;
     use HasLike;
+    use HidesDemoContent;
     use InteractsWithMedia;
 
     protected $fillable = [
@@ -77,6 +79,16 @@ class Post extends Model implements HasMedia, Likeable
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    public function resolveRouteBinding($value, $field = null): ?self
+    {
+        return $this->newQuery()
+            ->visibleTo(auth()->user())
+            ->where(fn ($query) => $query
+                ->where($field ?? $this->getRouteKeyName(), $value)
+                ->orWhere('id', $value))
+            ->first();
     }
 
     public function comments(): \Illuminate\Database\Eloquent\Relations\HasMany
