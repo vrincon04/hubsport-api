@@ -10,6 +10,9 @@ class UserResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $isDemo = (bool) config('demo.enabled')
+            && hash_equals((string) config('demo.user_email'), (string) $this->email);
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -33,6 +36,16 @@ class UserResource extends JsonResource
             'profile' => new ProfileResource($this->whenLoaded('profile')),
 
             'avatar' => new MediaResource($this->whenLoaded('avatar')),
+
+            'demo_preview' => $isDemo,
+            'feature_flags' => $isDemo ? [
+                'billing' => true,
+                'groups' => true,
+                'collaborations' => true,
+                'store' => true,
+                'events' => true,
+                'sponsorships' => true,
+            ] : [],
         ];
     }
 }

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Country;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
@@ -11,11 +12,8 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      *
-     * Orden: roles y deportes → países mínimos si faltan → 10 usuarios Faker
-     * (SampleUsersSeeder) → demo/prueba (DemoUsersSeeder) → chat, conexiones,
-     * historias, notificaciones, ajustes, noticias, resultados, saved jobs,
-     * redes sociales, email_verifications y avatares (DemoContentSeeder) →
-     * perfil demo completo tipo capturas de app (DemoShowcaseProfileSeeder).
+     * Orden: catálogos y usuarios de muestra, seguidos del dataset demo
+     * determinístico e idempotente.
      */
     public function run(): void
     {
@@ -36,8 +34,6 @@ class DatabaseSeeder extends Seeder
         }
 
         $this->call(SampleUsersSeeder::class);
-        $this->call(DemoUsersSeeder::class);
-        $this->call(DemoContentSeeder::class);
-        $this->call(DemoShowcaseProfileSeeder::class);
+        DB::transaction(fn () => $this->call(DemoFullShowcaseSeeder::class));
     }
 }

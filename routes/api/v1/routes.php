@@ -2,6 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 
+Route::prefix('demo')
+    ->as('demo:')
+    ->middleware(['auth:sanctum'])
+    ->group(function () {
+        Route::get('/showcase', \App\Http\Controllers\V1\Demo\ShowcaseController::class)
+            ->name('showcase');
+    });
+
 Route::prefix('auth')
     ->as('auth:')
     ->group(

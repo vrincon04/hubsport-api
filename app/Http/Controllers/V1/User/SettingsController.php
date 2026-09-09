@@ -87,6 +87,16 @@ class SettingsController extends Controller
 
     public function changePassword(Request $request)
     {
+        abort_if(
+            $request->user()?->tokenCan('demo')
+                && hash_equals(
+                    (string) config('demo.user_email'),
+                    (string) $request->user()?->email
+                ),
+            403,
+            'Esta acción no está disponible en la sesión demo.'
+        );
+
         $data = $request->validate([
             'current_password' => ['required', 'string'],
             'password' => ['required', 'confirmed', Password::min(8)->letters()->mixedCase()->numbers()],

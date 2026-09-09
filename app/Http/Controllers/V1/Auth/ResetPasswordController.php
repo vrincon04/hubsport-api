@@ -17,6 +17,13 @@ class ResetPasswordController extends Controller
     public function __invoke(ResetPasswordRequest $request): JsonResponse
 
     {
+        abort_if(
+            config('demo.enabled')
+                && hash_equals((string) config('demo.user_email'), (string) $request->email),
+            Response::HTTP_FORBIDDEN,
+            'Esta acción no está disponible para el usuario demo.'
+        );
+
         $verification = EmailVerification::where('email', $request->email)
                                         ->where('code', $request->code)
                                         ->first();
