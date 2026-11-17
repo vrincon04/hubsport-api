@@ -29,7 +29,7 @@ class Connection extends Model
     /**
      * The other party in this connection relative to the authenticated user.
      */
-    public function peerFor(User $auth): User
+    public function peerFor(User $auth): ?User
     {
         return $this->user_id === $auth->id
             ? $this->connectedUser

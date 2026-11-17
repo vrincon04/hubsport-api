@@ -22,34 +22,13 @@ class SearchController extends Controller
     public function __invoke(Request $request): JsonResponse
     {
         $query = trim((string) $request->query('q', ''));
-        $hasFilters = collect([
-            'profile_type',
-            'sport_id',
-            'country_id',
-            'city',
-            'sport_level',
-            'opportunity_type',
-        ])->contains(fn (string $key) => $request->filled($key));
-
-        if ($query === '' && ! $hasFilters) {
-            return response()->json([
-                'message' => 'Search',
-                'data' => [
-                    'users' => [],
-                    'posts' => [],
-                    'news' => [],
-                    'opportunities' => [],
-                    'sponsorships' => [],
-                    'events' => [],
-                ],
-            ]);
-        }
 
         $viewer = $request->user();
 
         $users = User::query()
             ->with(['profile.country', 'profile.sport', 'avatar'])
             ->visibleTo($viewer)
+            ->when($viewer && ! $viewer->is_demo, fn ($builder) => $builder->where('id', '!=', $viewer->id))
             ->when($query !== '', function ($builder) use ($query) {
                 $builder->where(function ($q) use ($query) {
                     $q->where('name', 'like', "%{$query}%")

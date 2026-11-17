@@ -1,0 +1,44 @@
+name: Deploy backend
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: production-backend
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Trust host key
+        run: ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+      - name: Create rollback backup
+        run: |
+          ssh "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+            "mkdir -p /home/backups/hubsport && tar -czf /home/backups/hubsport/backend-\$(date +%Y%m%d%H%M%S).tgz -C '${{ secrets.DEPLOY_PATH }}' --exclude=storage --exclude=.env ."
+      - name: Upload application
+        run: |
+          rsync -az \
+            --exclude='.env' \
+            --exclude='storage/' \
+            --exclude='vendor/' \
+            --exclude='.git/' \
+            ./ "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/"
+      - name: Install and activate
+        run: |
+          ssh "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" "cd '${{ secrets.DEPLOY_PATH }}' && \
+            composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction && \
+            php artisan migrate --force && \
+            php artisan optimize:clear && \
+            php artisan config:cache && \
+            php artisan route:cache && \
+            php artisan view:cache && \
+            php artisan demo:reset"
+      - name: Health check
+        run: curl --fail --retry 5 --retry-delay 5 https://yordy.shop/up

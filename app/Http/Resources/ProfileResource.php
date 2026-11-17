@@ -33,6 +33,7 @@ class ProfileResource extends JsonResource
             'experience' => $this->experience,
             'achievements' => $this->achievements,
             'education' => $this->education,
+            'stats' => $this->stats,
 
             'user' => new UserResource($this->whenLoaded('user')),
             'country' => new CountryResource($this->whenLoaded('country')),

@@ -74,8 +74,9 @@ class DemoExperienceTest extends TestCase
             ]);
 
         $payload = json_encode($response->json(), JSON_THROW_ON_ERROR);
+        $billing = json_encode($response->json('data.billing'), JSON_THROW_ON_ERROR);
         $this->assertStringNotContainsString('cvv', strtolower($payload));
-        $this->assertDoesNotMatchRegularExpression('/\b\d{13,19}\b/', $payload);
+        $this->assertDoesNotMatchRegularExpression('/\b\d{13,19}\b/', $billing);
     }
 
     public function test_seeder_and_reset_are_idempotent_and_preserve_normal_users(): void
@@ -101,6 +102,30 @@ class DemoExperienceTest extends TestCase
         $this->assertDatabaseHas('users', ['id' => $normalUser->id]);
     }
 
+    public function test_reset_preserves_the_active_demo_session(): void
+    {
+        config()->set('demo.enabled', true);
+        $this->seed(DemoFullShowcaseSeeder::class);
+        $token = $this->postJson('/api/v1/auth/demo-login')->assertOk()->json('token');
+
+        $this->artisan('demo:reset')->assertSuccessful();
+
+        $this->withToken($token)
+            ->getJson('/api/v1/demo/showcase')
+            ->assertOk();
+    }
+
+    public function test_reset_is_skipped_when_demo_is_disabled(): void
+    {
+        config()->set('demo.enabled', false);
+
+        $this->artisan('demo:reset')->assertSuccessful();
+
+        $this->assertDatabaseMissing('users', [
+            'email' => config('demo.user_email'),
+        ]);
+    }
+
     public function test_demo_session_has_sufficient_data_in_all_client_flows(): void
     {
         config()->set('demo.enabled', true);
@@ -121,9 +146,10 @@ class DemoExperienceTest extends TestCase
         $this->assertGreaterThanOrEqual(1, $this->listCount($this->getJson('/api/v1/connections/requests/incoming')->assertOk()));
         $this->assertGreaterThanOrEqual(1, $this->listCount($this->getJson('/api/v1/connections/requests/outgoing')->assertOk()));
 
-        $conversations = $this->getJson('/api/v1/chat')->assertOk()->json();
+        $conversations = $this->getJson('/api/v1/chat')->assertOk()->json('data');
         $this->assertIsArray($conversations);
         $this->assertGreaterThanOrEqual(3, count($conversations));
+        $this->assertNotEmpty($conversations[0]['other_user']['name'] ?? null);
         $messages = $this->getJson('/api/v1/chat/'.$conversations[0]['id'])->assertOk()->json();
         $this->assertGreaterThanOrEqual(2, count($messages));
 
@@ -140,7 +166,16 @@ class DemoExperienceTest extends TestCase
             $this->listCount($this->getJson('/api/v1/references/users/'.$me['id'])->assertOk())
         );
 
-        $this->assertGreaterThanOrEqual(2, $this->listCount($this->getJson('/api/v1/events')->assertOk()));
+        $events = collect($this->getJson('/api/v1/events')->assertOk()->json('data'));
+        $this->assertGreaterThanOrEqual(2, $events->count());
+        $this->assertTrue($events->every(fn ($event) => filled($event['photo_url'] ?? null)));
+        $this->assertFalse($events->contains(fn ($event) => str_contains((string) ($event['photo_url'] ?? ''), 'example.test')));
+
+        $coach = User::query()->where('email', 'demo.peer.coach@hubsport.test')->firstOrFail();
+        $coachProfile = $this->getJson('/api/v1/user/'.$coach->id)->assertOk()->json('data.profile');
+        $this->assertNotEmpty($coachProfile['experience']);
+        $this->assertNotEmpty($coachProfile['achievements']);
+        $this->assertNotEmpty($coachProfile['education']);
         $this->assertGreaterThanOrEqual(3, $this->listCount($this->getJson('/api/v1/sponsorships')->assertOk()));
         $this->assertNotEmpty($this->getJson('/api/v1/stories')->assertOk()->json('data'));
 

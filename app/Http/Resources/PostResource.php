@@ -25,7 +25,13 @@ class PostResource extends JsonResource
 
             'gallery' => MediaResource::collection($this->whenLoaded('gallery')),
 
-            'likes' => $this->whenLoaded('likes'),
+            'likes' => $this->whenLoaded('likes', function () {
+                return $this->likes
+                    ->map(fn ($like) => $like->user)
+                    ->filter()
+                    ->map(fn ($user) => new UserSummaryResource($user))
+                    ->values();
+            }),
             'likes_count' => $this->whenCounted('likes'),
         ];
     }

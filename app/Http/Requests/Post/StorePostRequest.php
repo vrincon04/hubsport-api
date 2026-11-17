@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Post;
 
 use App\Enums\PostStatusEnum;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
@@ -11,6 +12,21 @@ use Illuminate\Validation\Validator;
 class StorePostRequest extends FormRequest
 {
     private const IMAGE_MIMES = 'mimetypes:image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif,video/mp4';
+
+    protected function prepareForValidation(): void
+    {
+        if (! $this->filled('published_at')) {
+            return;
+        }
+
+        try {
+            $this->merge([
+                'published_at' => Carbon::parse($this->input('published_at'))->format('Y-m-d H:i:s'),
+            ]);
+        } catch (\Throwable) {
+            // Let the date validation rule return the user-facing error.
+        }
+    }
 
     public function rules(): array
     {

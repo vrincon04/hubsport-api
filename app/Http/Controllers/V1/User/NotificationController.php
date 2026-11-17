@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\V1\User;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Resources\NotificationResource;
 use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
@@ -15,9 +15,7 @@ class NotificationController extends Controller
     {
         $notifications = Auth::user()->notifications()->latest()->paginate(20);
 
-        return response()->json([
-            'data' => $notifications,
-        ]);
+        return NotificationResource::collection($notifications);
     }
 
     /**

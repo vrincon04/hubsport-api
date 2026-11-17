@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Demo\DemoOverlay;
 use Database\Seeders\DemoFullShowcaseSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Cache\LockTimeoutException;
@@ -18,6 +19,12 @@ class ResetDemoDataset extends Command
 
     public function handle(DemoFullShowcaseSeeder $seeder): int
     {
+        if (! config('demo.enabled')) {
+            $this->warn('Demo deshabilitado: reset omitido.');
+
+            return self::SUCCESS;
+        }
+
         $lock = Cache::lock('demo-dataset-reset', 300);
 
         try {
@@ -25,6 +32,11 @@ class ResetDemoDataset extends Command
             Log::info('Demo dataset reset started');
 
             DB::transaction(fn () => $seeder->run(), 3);
+
+            $demoUserId = DB::table('users')->where('email', config('demo.user_email'))->value('id');
+            if (is_string($demoUserId) && $demoUserId !== '') {
+                DemoOverlay::forget($demoUserId);
+            }
 
             Log::info('Demo dataset reset completed');
             $this->info('Dataset demo restaurado correctamente.');

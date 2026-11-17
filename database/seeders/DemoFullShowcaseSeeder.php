@@ -63,6 +63,7 @@ class DemoFullShowcaseSeeder extends Seeder
         $users = collect([$demo])->merge($peers);
 
         $this->clearDemoContent($users);
+        $users->each(fn (User $user) => $user->clearMediaCollection('avatar'));
         $this->seedProfiles($demo, $peers, $country, $sport);
         $posts = $this->seedPosts($demo, $peers);
         $this->seedConnections($demo, $peers);
@@ -73,7 +74,7 @@ class DemoFullShowcaseSeeder extends Seeder
         $this->seedSponsorships($demo, $peers, $sport);
         $this->seedSettingsSocialNotificationsAndStories($demo, $peers);
         $this->seedLikes($demo, $peers, $posts);
-        $this->ensureAvatar($demo);
+        $this->attachDemoAvatars($users);
     }
 
     private function upsertUser(string $email, string $name): User
@@ -98,6 +99,9 @@ class DemoFullShowcaseSeeder extends Seeder
         DB::table('conversations')->whereIn('id', $conversationIds)->delete();
 
         $postIds = DB::table('posts')->whereIn('user_id', $ids)->pluck('id');
+        Post::query()->whereIn('id', $postIds)->get()->each(
+            fn (Post $post) => $post->clearMediaCollection('gallery')
+        );
         DB::table('comments')->where(function ($query) use ($ids, $postIds) {
             $query->whereIn('user_id', $ids)->orWhereIn('post_id', $postIds);
         })->delete();
@@ -132,10 +136,6 @@ class DemoFullShowcaseSeeder extends Seeder
         DB::table('social_accounts')->whereIn('user_id', $ids)->delete();
         DB::table('notifications')->whereIn('notifiable_id', $ids)->delete();
         DB::table('stories')->whereIn('user_id', $ids)->delete();
-        DB::table('personal_access_tokens')
-            ->where('tokenable_type', User::class)
-            ->whereIn('tokenable_id', $ids)
-            ->delete();
     }
 
     private function seedProfiles(User $demo, Collection $peers, Country $country, Sport $sport): void
@@ -166,24 +166,39 @@ class DemoFullShowcaseSeeder extends Seeder
             'experience' => [[
                 'role' => 'Atleta de alto rendimiento',
                 'organization' => 'Club Horizonte',
+                'period' => '2022 - Actualidad',
                 'period_label' => '2022 - Actualidad',
                 'is_current' => true,
-                'description' => 'Preparación competitiva nacional e internacional.',
+                'description' => 'Preparación competitiva nacional e internacional en 400 metros.',
+            ], [
+                'role' => 'Seleccionada juvenil',
+                'organization' => 'Federación de Atletismo',
+                'period' => '2018 - 2021',
+                'period_label' => '2018 - 2021',
+                'description' => 'Ciclo de competencias regionales y campamentos de velocidad.',
             ]],
             'achievements' => [[
                 'title' => 'Campeona nacional de 400 m',
-                'date_label' => 'Junio 2026',
+                'date' => 'Junio 2025',
+                'date_label' => 'Junio 2025',
+                'image_urls' => [],
+            ], [
+                'title' => 'Récord personal 52.40 s',
+                'date' => 'Marzo 2026',
+                'date_label' => 'Marzo 2026',
                 'image_urls' => [],
             ]],
             'education' => [[
                 'institution' => 'Instituto Nacional de Deportes',
                 'degree' => 'Gestión Deportiva',
+                'period' => '2020 - 2024',
                 'period_label' => '2020 - 2024',
             ]],
         ]);
 
         foreach ($peers->values() as $index => $peer) {
             $definition = self::PEERS[$index];
+            $career = $this->peerCareer($definition['type'], $definition['name']);
             Profile::query()->updateOrCreate(['user_id' => $peer->id], [
                 'country_id' => $country->id,
                 'sport_id' => $sport->id,
@@ -195,9 +210,14 @@ class DemoFullShowcaseSeeder extends Seeder
                 'verified_at' => '2026-01-15 12:00:00',
                 'verified_badge' => true,
                 'city' => 'Santo Domingo',
-                'bio' => 'Perfil coordinado para recorridos demostrativos de HubSport.',
-                'birth_date' => '1992-06-15',
-                'position' => $index === 0 ? 'Entrenadora' : 'Miembro de la comunidad deportiva',
+                'bio' => $career['bio'],
+                'birth_date' => $career['birth_date'],
+                'position' => $career['position'],
+                'sport_level' => $career['sport_level'],
+                'current_team' => $career['current_team'],
+                'experience' => $career['experience'],
+                'achievements' => $career['achievements'],
+                'education' => $career['education'],
             ]);
         }
     }
@@ -209,13 +229,18 @@ class DemoFullShowcaseSeeder extends Seeder
             [$demo, 'Nueva mejor marca personal', 'El trabajo constante dio resultado: 52.40 segundos en 400 metros.', 'published'],
             [$peers[1], 'Entrenamiento abierto', 'El sábado compartiremos una sesión guiada para atletas juveniles.', 'published'],
             [$peers[2], 'Convocatoria del Club Horizonte', 'Abrimos cupos para el encuentro nacional de velocidad.', 'published'],
-        ])->map(fn (array $row) => Post::query()->create([
-            'user_id' => $row[0]->id,
-            'title' => $row[1],
-            'body' => $row[2],
-            'status' => $row[3],
-            'published_at' => '2026-08-20 14:00:00',
-        ]));
+        ])->map(function (array $row) {
+            $post = Post::query()->create([
+                'user_id' => $row[0]->id,
+                'title' => $row[1],
+                'body' => $row[2],
+                'status' => $row[3],
+                'published_at' => '2026-08-20 14:00:00',
+            ]);
+            $this->attachGeneratedImage($post, 'gallery', $row[1].'.png', 30 + crc32($row[1]) % 180, 90, 180);
+
+            return $post;
+        });
 
         Comment::query()->create([
             'user_id' => $peers[0]->id,
@@ -316,7 +341,7 @@ class DemoFullShowcaseSeeder extends Seeder
             'location' => 'Remoto',
             'contract_type' => 'full_time',
             'application_type' => 'web',
-            'application_url' => 'https://example.test/demo/jobs/analyst',
+            'application_url' => 'https://yordy.shop/demo/jobs/analyst',
             'description' => 'Análisis de carga, tendencias de rendimiento y reportes para equipos deportivos.',
             'deadline' => '2026-11-30',
         ]);
@@ -382,6 +407,31 @@ class DemoFullShowcaseSeeder extends Seeder
             'message' => 'Solicitud de referencia institucional para la ficha de atleta.',
             'status' => 'pending',
         ]);
+
+        ReferenceRequest::query()->create([
+            'requester_id' => $peers[3]->id,
+            'recipient_id' => $demo->id,
+            'relationship_type' => 'coach',
+            'message' => 'Necesito una referencia sobre tu constancia en pista.',
+            'status' => 'accepted',
+        ]);
+
+        $pendingConfirmation = ReferenceRequest::query()->create([
+            'requester_id' => $demo->id,
+            'recipient_id' => $peers[4]->id,
+            'relationship_type' => 'club',
+            'message' => 'Referencia lista para confirmar y publicar.',
+            'status' => 'pending_confirmation',
+        ]);
+        SportsReference::query()->create([
+            'reference_request_id' => $pendingConfirmation->id,
+            'author_id' => $peers[4]->id,
+            'subject_user_id' => $demo->id,
+            'relationship_type' => 'club',
+            'body' => 'Sofía representa al club con disciplina, puntualidad y liderazgo silencioso.',
+            'status' => 'pending_confirmation',
+            'is_suspicious' => false,
+        ]);
     }
 
     private function seedEvents(User $demo, Collection $peers, Sport $sport): void
@@ -396,8 +446,9 @@ class DemoFullShowcaseSeeder extends Seeder
             'city' => 'Santo Domingo',
             'country' => 'República Dominicana',
             'description' => 'Jornada de competencias, formación y conexión entre atletas.',
+            'photo_url' => 'https://images.unsplash.com/photo-1461896836934-ffe607ba6851?auto=format&fit=crop&w=1200&q=80',
             'organizer_name' => 'Club Horizonte',
-            'organizer_contact' => 'eventos@example.test',
+            'organizer_contact' => 'eventos@hubsport.test',
             'participants_count' => 2,
         ]);
         EventParticipant::query()->create(['event_id' => $event->id, 'user_id' => $demo->id, 'status' => 'registered']);
@@ -414,6 +465,7 @@ class DemoFullShowcaseSeeder extends Seeder
             'city' => 'Santo Domingo',
             'country' => 'República Dominicana',
             'description' => 'Taller técnico para velocistas y entrenadores de la comunidad HubSport.',
+            'photo_url' => 'https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1200&q=80',
             'organizer_name' => 'Sofía Ramírez',
             'organizer_contact' => 'sofia.demo@hubsport.test',
             'participants_count' => 1,
@@ -429,7 +481,7 @@ class DemoFullShowcaseSeeder extends Seeder
             'sponsorship_type' => 'athlete_support',
             'requirements' => 'Participación en contenido deportivo y reporte trimestral de resultados.',
             'benefits' => 'Equipamiento, apoyo de viaje y sesiones de recuperación.',
-            'contact' => 'alianzas@example.test',
+            'contact' => 'alianzas@hubsport.test',
         ]);
         Sponsorship::query()->create([
             'user_id' => $peers[2]->id,
@@ -438,7 +490,7 @@ class DemoFullShowcaseSeeder extends Seeder
             'sponsorship_type' => 'event',
             'requirements' => 'Presencia de marca en actividades comunitarias.',
             'benefits' => 'Apoyo logístico para el encuentro nacional.',
-            'contact' => 'patrocinios@example.test',
+            'contact' => 'patrocinios@hubsport.test',
         ]);
         Sponsorship::query()->create([
             'user_id' => $peers[0]->id,
@@ -447,7 +499,7 @@ class DemoFullShowcaseSeeder extends Seeder
             'sponsorship_type' => 'equipment',
             'requirements' => 'Calendario competitivo verificable y contenido mensual.',
             'benefits' => 'Kit técnico y sesiones de fuerza supervisadas.',
-            'contact' => 'apex@example.test',
+            'contact' => 'apex@hubsport.test',
         ]);
     }
 
@@ -483,13 +535,13 @@ class DemoFullShowcaseSeeder extends Seeder
 
         Story::query()->create([
             'user_id' => $demo->id,
-            'media_url' => 'https://images.example.test/demo/track-session.jpg',
+            'media_url' => 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=800&q=80',
             'type' => 'image',
             'expires_at' => now()->addDay(),
         ]);
         Story::query()->create([
             'user_id' => $peers[1]->id,
-            'media_url' => 'https://images.example.test/demo/community-training.jpg',
+            'media_url' => 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=800&q=80',
             'type' => 'image',
             'expires_at' => now()->addDay(),
         ]);
@@ -509,18 +561,122 @@ class DemoFullShowcaseSeeder extends Seeder
         ]);
     }
 
-    private function ensureAvatar(User $demo): void
+    private function attachDemoAvatars(Collection $users): void
     {
-        if ($demo->getMedia('avatar')->isNotEmpty()) {
-            return;
+        $palette = [
+            [44, 181, 255],
+            [255, 122, 26],
+            [16, 185, 129],
+            [139, 92, 246],
+            [239, 68, 68],
+            [14, 165, 233],
+        ];
+
+        foreach ($users->values() as $index => $user) {
+            $user->clearMediaCollection('avatar');
+            [$r, $g, $b] = $palette[$index % count($palette)];
+            $this->attachGeneratedImage($user, 'avatar', 'avatar-'.$index.'.png', $r, $g, $b);
+        }
+    }
+
+    private function attachGeneratedImage(User|Post $model, string $collection, string $fileName, int $r, int $g, int $b): void
+    {
+        $model->addMediaFromString($this->coloredPng($r, $g, $b))
+            ->usingFileName($fileName)
+            ->toMediaCollection($collection);
+    }
+
+    private function coloredPng(int $r, int $g, int $b): string
+    {
+        if (function_exists('imagecreatetruecolor')) {
+            $image = imagecreatetruecolor(256, 256);
+            $color = imagecolorallocate($image, $r, $g, $b);
+            imagefilledrectangle($image, 0, 0, 255, 255, $color);
+            ob_start();
+            imagepng($image);
+            imagedestroy($image);
+
+            return (string) ob_get_clean();
         }
 
-        $png = base64_decode(
-            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmWQQAAAABJRU5ErkJggg==',
+        return (string) base64_decode(
+            'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAfUlEQVR4nO3BMQEAAADCoPVP7WkIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALwYM8kAAQAAAABJRU5ErkJggg==',
             true
         );
-        $demo->addMediaFromString($png)
-            ->usingFileName('demo-avatar.png')
-            ->toMediaCollection('avatar');
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function peerCareer(string $type, string $name): array
+    {
+        return match ($type) {
+            'coach' => [
+                'bio' => $name.' diseña ciclos de velocidad, fuerza y recuperación para atletas de pista.',
+                'birth_date' => '1987-03-08',
+                'position' => 'Entrenadora de velocidad',
+                'sport_level' => 'professional',
+                'current_team' => 'Club Horizonte',
+                'experience' => [[
+                    'role' => 'Entrenadora principal',
+                    'organization' => 'Club Horizonte',
+                    'period' => '2019 - Actualidad',
+                    'description' => 'Planificación de cargas y seguimiento de marcas en 200 y 400 metros.',
+                ]],
+                'achievements' => [[
+                    'title' => 'Staff técnico del encuentro nacional',
+                    'date' => '2025',
+                ]],
+                'education' => [[
+                    'institution' => 'Escuela Nacional de Entrenadores',
+                    'degree' => 'Licenciatura en Educación Física',
+                    'period' => '2006 - 2010',
+                ]],
+            ],
+            'athlete' => [
+                'bio' => $name.' combina pista y trabajo comunitario. Especialista en 200 metros y relevos.',
+                'birth_date' => '1999-11-02',
+                'position' => 'Velocista 200 m',
+                'sport_level' => 'semi_pro',
+                'current_team' => 'Club Horizonte',
+                'experience' => [[
+                    'role' => 'Atleta federado',
+                    'organization' => 'Club Horizonte',
+                    'period' => '2021 - Actualidad',
+                    'description' => 'Temporada regular, relevos 4x100 y clínicas abiertas.',
+                ]],
+                'achievements' => [[
+                    'title' => 'Plata nacional en 200 m',
+                    'date' => 'Agosto 2025',
+                ]],
+                'education' => [[
+                    'institution' => 'Universidad Autónoma de Santo Domingo',
+                    'degree' => 'Educación Física',
+                    'period' => '2018 - 2023',
+                ]],
+            ],
+            default => [
+                'bio' => $name.' articula competencias, scouting y alianzas para la comunidad deportiva.',
+                'birth_date' => '1984-09-21',
+                'position' => 'Dirección deportiva',
+                'sport_level' => 'professional',
+                'current_team' => 'Club Horizonte',
+                'experience' => [[
+                    'role' => 'Coordinación de talentos',
+                    'organization' => $name,
+                    'period' => '2016 - Actualidad',
+                    'description' => 'Convocatorias, acreditaciones y seguimiento de atletas emergentes.',
+                ]],
+                'achievements' => [[
+                    'title' => 'Organización del Encuentro Nacional de Velocidad',
+                    'date' => '2024',
+                ]],
+                'education' => [[
+                    'institution' => 'INEFI',
+                    'degree' => 'Gestión de organizaciones deportivas',
+                    'period' => '2012 - 2015',
+                ]],
+            ],
+        };
     }
 }

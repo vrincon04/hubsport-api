@@ -10,11 +10,15 @@ class ConnectionResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $viewer = $request->user();
+        $peer = $viewer ? $this->peerFor($viewer) : null;
+
         return [
             'id' => $this->id,
             'status' => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'user' => $peer ? new UserResource($peer) : null,
             'sender' => $this->when(
                 $this->relationLoaded('user') && $this->user,
                 fn () => new UserResource($this->user)

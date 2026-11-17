@@ -4,10 +4,23 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('demo')
     ->as('demo:')
-    ->middleware(['auth:sanctum'])
+    ->middleware(['auth:sanctum', 'throttle:30,1'])
     ->group(function () {
         Route::get('/showcase', \App\Http\Controllers\V1\Demo\ShowcaseController::class)
             ->name('showcase');
+        Route::get('/invoices/{invoice}/pdf', \App\Http\Controllers\V1\Demo\InvoicePdfController::class)
+            ->middleware('throttle:10,1')
+            ->name('invoices.pdf');
+        Route::post('/groups/{id}/join', [\App\Http\Controllers\V1\Demo\ExperienceController::class, 'joinGroup'])
+            ->name('groups.join');
+        Route::post('/groups/{id}/leave', [\App\Http\Controllers\V1\Demo\ExperienceController::class, 'leaveGroup'])
+            ->name('groups.leave');
+        Route::post('/groups/{id}/posts', [\App\Http\Controllers\V1\Demo\ExperienceController::class, 'postInGroup'])
+            ->name('groups.posts');
+        Route::post('/store/checkout', [\App\Http\Controllers\V1\Demo\ExperienceController::class, 'checkout'])
+            ->name('store.checkout');
+        Route::post('/sponsorships/{id}/apply', [\App\Http\Controllers\V1\Demo\ExperienceController::class, 'applySponsorship'])
+            ->name('sponsorships.apply');
     });
 
 Route::prefix('auth')

@@ -6,16 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Models\EmailVerification;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
-
 
 class ResetPasswordController extends Controller
 {
     public function __invoke(ResetPasswordRequest $request): JsonResponse
-
     {
         abort_if(
             config('demo.enabled')
@@ -25,10 +23,10 @@ class ResetPasswordController extends Controller
         );
 
         $verification = EmailVerification::where('email', $request->email)
-                                        ->where('code', $request->code)
-                                        ->first();
+            ->where('code', $request->code)
+            ->first();
 
-        if (!$verification) {
+        if (! $verification) {
             throw ValidationException::withMessages([
                 'code' => 'The provided code is invalid or has expired.',
             ]);
@@ -37,6 +35,7 @@ class ResetPasswordController extends Controller
         $user = User::where('email', $request->email)->firstOrFail();
         $user->password = Hash::make($request->password);
         $user->save();
+        $user->tokens()->delete();
 
         $verification->delete();
 

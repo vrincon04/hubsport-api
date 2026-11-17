@@ -3,22 +3,28 @@
 namespace App\Http\Controllers\V1\Chat;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ConversationResource;
 use App\Models\Conversation;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ConversationController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
         $conversations = $request->user()->conversations()
-            ->with(['users', 'messages' => function ($query) {
-            $query->latest()->limit(1);
-        }])
+            ->with([
+                'users.avatar',
+                'users.profile.country',
+                'users.profile.sport',
+                'messages' => function ($query) {
+                    $query->latest()->limit(1);
+                },
+            ])
             ->latest()
             ->get();
 
-        return response()->json($conversations);
+        return ConversationResource::collection($conversations)->response();
     }
 
     public function store(Request $request): JsonResponse
@@ -30,15 +36,24 @@ class ConversationController extends Controller
         // Check if conversation already exists between these two
         $conversation = $request->user()->conversations()
             ->whereHas('users', function ($query) use ($validated) {
-            $query->where('users.id', $validated['user_id']);
-        })
+                $query->where('users.id', $validated['user_id']);
+            })
             ->first();
 
-        if (!$conversation) {
+        if (! $conversation) {
             $conversation = Conversation::create();
             $conversation->users()->attach([$request->user()->id, $validated['user_id']]);
         }
 
-        return response()->json($conversation->load('users'), 201);
+        $conversation->load([
+            'users.avatar',
+            'users.profile.country',
+            'users.profile.sport',
+            'messages' => fn ($query) => $query->latest()->limit(1),
+        ]);
+
+        return (new ConversationResource($conversation))
+            ->response()
+            ->setStatusCode(201);
     }
 }
