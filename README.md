@@ -42,10 +42,12 @@ php artisan demo:reset
 
 ```bash
 php artisan test
-# Subconjunto usado en CI:
-php artisan test tests/Feature/Demo tests/Feature/Chat tests/Feature/Auth/ApiResetPasswordTest.php
+# Flujos MVP + demo (CI):
+php artisan test tests/Feature/Flows tests/Feature/Demo tests/Feature/Chat tests/Feature/Auth/ApiResetPasswordTest.php
 ./vendor/bin/pint --test
 ```
+
+Los tests en `tests/Feature/Flows/` cubren: auth API, feed, conexiones, chat, búsqueda, empleos, perfil/settings/notificaciones.
 
 CI: `.github/workflows/ci.yml` (MySQL 8 + PHP 8.3 + extensión `gd`).
 

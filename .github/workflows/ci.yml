@@ -41,5 +41,5 @@ jobs:
           extensions: mbstring, pdo_mysql, gd
           coverage: xdebug
       - uses: ramsey/composer-install@v3
-      - run: php artisan test tests/Feature/Demo tests/Feature/Chat tests/Feature/Auth/ApiResetPasswordTest.php
-      - run: vendor/bin/pint --test app/Demo app/Http/Controllers/V1/Demo tests/Feature/Demo
+      - run: php artisan test tests/Feature/Flows tests/Feature/Demo tests/Feature/Chat tests/Feature/Auth/ApiResetPasswordTest.php
+      - run: vendor/bin/pint --test app/Demo app/Http/Controllers/V1/Demo app/Http/Requests/Auth/LoginRequest.php tests/Feature/Demo tests/Feature/Flows
