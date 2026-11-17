@@ -124,7 +124,8 @@ class SettingsController extends Controller
                 'ip_address' => $session->ip_address,
                 'user_agent' => $session->user_agent,
                 'last_activity' => date('c', (int) $session->last_activity),
-                'is_current' => $session->id === $request->session()->getId(),
+                'is_current' => $request->hasSession()
+                    && $session->id === $request->session()->getId(),
             ]);
 
         return response()->json(['data' => $sessions]);
