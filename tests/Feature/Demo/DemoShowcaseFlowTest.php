@@ -62,6 +62,9 @@ class DemoShowcaseFlowTest extends TestCase
 
         $this->assertSame('confirmed', $order['status']);
         $this->assertSame('Clavos de pista 400 m', $order['product_name']);
+        $this->assertSame(12.0, (float) $order['commission_percent']);
+        $this->assertArrayHasKey('commission_amount', $order);
+        $this->assertArrayHasKey('net_amount', $order);
 
         $this->withToken($token)
             ->postJson('/api/v1/demo/sponsorships/col_demo_training/apply', [

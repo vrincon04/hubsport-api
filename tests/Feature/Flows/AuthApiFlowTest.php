@@ -32,6 +32,7 @@ class AuthApiFlowTest extends TestCase
                 'city' => 'Santo Domingo',
                 'sport_id' => $sport->id,
                 'profile_type' => 'athlete',
+                'birth_date' => '1998-05-10',
             ],
         ]);
 

@@ -9,6 +9,8 @@ Route::get('/requests/incoming', [ConnectionController::class, 'incoming'])
     ->name('connections.incoming');
 Route::get('/requests/outgoing', [ConnectionController::class, 'outgoing'])
     ->name('connections.outgoing');
+Route::get('/users/{user}/circle', [ConnectionController::class, 'circle'])
+    ->name('connections.circle');
 Route::post('/', [ConnectionController::class, 'store'])
     ->name('connections.store');
 Route::post('/{connection}/accept', [ConnectionController::class, 'accept'])

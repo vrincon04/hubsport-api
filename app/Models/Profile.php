@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Profile extends Model
 {
@@ -22,7 +23,12 @@ class Profile extends Model
         'user_id',
         'country_id',
         'sport_id',
+        'sport_locked_at',
         'profile_type',
+        'account_status',
+        'guardian_email',
+        'guardian_confirmed_at',
+        'guardian_token',
         'first_name',
         'last_name',
         'phone_number',
@@ -33,9 +39,18 @@ class Profile extends Model
         'city',
         'bio',
         'birth_date',
+        'height_cm',
+        'weight_kg',
+        'wingspan_cm',
+        'laterality',
+        'physical_extras',
         'position',
         'sport_level',
         'current_team',
+        'organization_name',
+        'rnc',
+        'organization_document_url',
+        'organization_website',
         'social_links',
         'stats',
         'experience',
@@ -52,7 +67,13 @@ class Profile extends Model
         'birth_date' => 'datetime:Y-m-d',
         'phone_verified_at' => 'datetime',
         'verified_at' => 'datetime',
+        'sport_locked_at' => 'datetime',
+        'guardian_confirmed_at' => 'datetime',
         'verified_badge' => 'boolean',
+        'height_cm' => 'decimal:2',
+        'weight_kg' => 'decimal:2',
+        'wingspan_cm' => 'decimal:2',
+        'physical_extras' => 'array',
         'social_links' => 'array',
         'stats' => 'array',
         'experience' => 'array',
@@ -76,6 +97,21 @@ class Profile extends Model
     public function sport(): BelongsTo
     {
         return $this->belongsTo(Sport::class);
+    }
+
+    public function metricValues(): HasMany
+    {
+        return $this->hasMany(AthleteMetricValue::class);
+    }
+
+    public function competitionResults(): HasMany
+    {
+        return $this->hasMany(AthleteCompetitionResult::class);
+    }
+
+    public function videos(): HasMany
+    {
+        return $this->hasMany(AthleteVideo::class);
     }
 
     /**

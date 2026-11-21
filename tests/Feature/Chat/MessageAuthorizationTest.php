@@ -23,8 +23,9 @@ class MessageAuthorizationTest extends TestCase
             ]);
 
         $response->assertCreated()
-            ->assertJsonPath('text', 'Hola desde HubSport')
-            ->assertJsonPath('sender_id', $sender->id);
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.text', 'Hola desde HubSport')
+            ->assertJsonPath('data.sender_id', $sender->id);
 
         $this->assertDatabaseHas('messages', [
             'conversation_id' => $conversation->id,
@@ -45,7 +46,8 @@ class MessageAuthorizationTest extends TestCase
             ]);
 
         $response->assertCreated()
-            ->assertJsonPath('text', 'Mensaje desde app anterior');
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.text', 'Mensaje desde app anterior');
     }
 
     public function test_non_participant_cannot_read_or_write_messages(): void

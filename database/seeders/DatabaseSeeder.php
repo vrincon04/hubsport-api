@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RolSeeder::class,
             SportSeeder::class,
+            ScoutMetricDefinitionsSeeder::class,
         ]);
 
         if (Country::count() === 0) {

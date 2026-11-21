@@ -10,11 +10,24 @@ class IndexController extends Controller
 {
     public function __invoke()
     {
+        $viewer = request()->user();
+
         $post = Post::with(['user.profile', 'user.avatar', 'likes.user.avatar', 'likes.user.profile', 'gallery'])
             ->withCount(['likes'])
-            ->visibleTo(request()->user())
+            ->visibleTo($viewer)
             ->when(request('user_id'), function ($query) {
                 return $query->where('user_id', request('user_id'));
+            })
+            ->when(request()->boolean('my_sport') || request()->filled('sport_id'), function ($query) use ($viewer) {
+                $sportId = request('sport_id') ?: $viewer?->profile?->sport_id;
+                if (! $sportId) {
+                    return $query->whereRaw('1 = 0');
+                }
+
+                return $query->whereHas(
+                    'user.profile',
+                    fn ($profile) => $profile->where('sport_id', $sportId)
+                );
             })
             ->orderByDesc('created_at');
 

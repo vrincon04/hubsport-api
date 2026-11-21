@@ -15,3 +15,6 @@ Route::get('/news/{news}', [\App\Http\Controllers\V1\News\NewsController::class 
 // Match Results
 Route::get('/results', [\App\Http\Controllers\V1\Sport\MatchResultController::class , 'index'])
     ->name('results.index');
+
+Route::get('/{sport}/metric-definitions', [\App\Http\Controllers\V1\Sport\MetricDefinitionController::class, 'index'])
+    ->name('metric-definitions');

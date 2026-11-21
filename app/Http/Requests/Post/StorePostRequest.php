@@ -49,6 +49,26 @@ class StorePostRequest extends FormRequest
                 'required',
                 'date',
             ],
+            'post_type' => [
+                'nullable',
+                'string',
+                Rule::in(['update', 'training', 'competition', 'news', 'other']),
+            ],
+            'location' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+            'activity_url' => [
+                'nullable',
+                'url:http,https',
+                'max:2048',
+            ],
+            'event_name' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
             'gallery' => [
                 'sometimes',
             ],

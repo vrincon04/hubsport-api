@@ -19,9 +19,11 @@ class Event extends Model
         'user_id',
         'sport_id',
         'name',
+        'event_type',
         'event_date',
         'event_time',
         'location',
+        'route_text',
         'city',
         'country',
         'description',
@@ -29,6 +31,7 @@ class Event extends Model
         'organizer_name',
         'organizer_contact',
         'participants_count',
+        'capacity',
     ];
 
     protected $casts = [

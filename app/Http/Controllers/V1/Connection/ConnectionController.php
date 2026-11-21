@@ -4,7 +4,9 @@ namespace App\Http\Controllers\V1\Connection;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ConnectionResource;
+use App\Http\Resources\UserResource;
 use App\Models\Connection;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -42,6 +44,41 @@ class ConnectionController extends Controller
         return response()->json([
             'message' => 'Connections list',
             'data' => ConnectionResource::collection($connections),
+        ]);
+    }
+
+    /**
+     * Connection circle for a user: peers + mutual count with the viewer.
+     */
+    public function circle(Request $request, User $user): JsonResponse
+    {
+        abort_unless($user->isVisibleTo($request->user()), Response::HTTP_NOT_FOUND);
+
+        $viewer = $request->user();
+        $peerIds = $user->acceptedPeerIds();
+        $mutualIds = $viewer && $viewer->id !== $user->id
+            ? array_values(array_intersect($peerIds, $viewer->acceptedPeerIds()))
+            : [];
+
+        $peers = User::query()
+            ->with(['profile.country', 'profile.sport', 'avatar'])
+            ->whereIn('id', $peerIds)
+            ->visibleTo($viewer)
+            ->limit(100)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'user' => [
+                    'id' => $user->id,
+                    'connections_count' => count($peerIds),
+                    'mutual_connections_count' => count($mutualIds),
+                ],
+                'connections' => UserResource::collection($peers),
+                'mutual_ids' => $mutualIds,
+            ],
+            'error' => null,
         ]);
     }
 

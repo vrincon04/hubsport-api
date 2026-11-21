@@ -16,7 +16,15 @@ class CreatePostAction
     {
         return DB::transaction(function () use ($request) {
             $user = $request->user();
-            $post = $user->posts()->create($request->safe()->only(['title', 'body', 'status', 'published_at']));
+            $post = $user->posts()->create($request->safe()->only([
+                'title',
+                'body',
+                'status',
+                'published_at',
+                'post_type',
+                'location',
+                'activity_url',
+            ]));
 
             $this->attachGalleryFiles($post, $request);
 

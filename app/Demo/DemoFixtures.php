@@ -185,7 +185,7 @@ final class DemoFixtures
                 'purchasable' => true,
                 'image_url' => 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=800&q=80',
                 'variants' => ['Único'],
-                'affiliate_url' => null,
+                'affiliate_url' => 'https://www.amazon.com/s?k=foam+roller+recovery+kit',
                 'demo' => true,
             ],
             [
@@ -198,7 +198,7 @@ final class DemoFixtures
                 'purchasable' => true,
                 'image_url' => 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80',
                 'variants' => ['38', '39', '40', '41', '42'],
-                'affiliate_url' => null,
+                'affiliate_url' => 'https://www.amazon.com/s?k=track+spikes+400m',
                 'demo' => true,
             ],
         ];

@@ -38,4 +38,9 @@ class Sport extends Model
     {
         return $this->hasMany(MatchResult::class);
     }
+
+    public function metricDefinitions(): HasMany
+    {
+        return $this->hasMany(SportMetricDefinition::class);
+    }
 }

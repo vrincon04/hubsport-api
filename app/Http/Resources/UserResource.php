@@ -28,7 +28,12 @@ class UserResource extends JsonResource
 
             'followers_count' => $this->followers_count ?? $this->followers()->count(),
             'following_count' => $this->following_count ?? $this->following()->count(),
+            'connections_count' => $this->acceptedConnectionsCount(),
+            'mutual_connections_count' => $request->user()
+                ? $this->mutualConnectionsCountWith($request->user())
+                : 0,
             'posts_count' => $this->posts_count ?? $this->posts()->count(),
+            'handle' => $this->slug ? '@'.$this->slug : null,
 
             'connection_status' => $request->user() ? $request->user()->getConnectionStatusWith($this->resource) : 'none',
             'stats' => $this->getSportsStats(),

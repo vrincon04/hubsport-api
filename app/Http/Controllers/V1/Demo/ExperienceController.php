@@ -75,13 +75,20 @@ class ExperienceController extends Controller
         $product = collect(DemoFixtures::products())->firstWhere('id', $validated['product_id']);
         abort_unless($product, Response::HTTP_NOT_FOUND, 'Producto no encontrado');
 
+        $amount = (float) $product['price'];
+        $commissionPercent = 12.0;
+        $commissionAmount = round($amount * ($commissionPercent / 100), 2);
+
         $order = [
             'id' => 'ord_demo_'.Str::lower(Str::random(6)),
             'product_id' => $product['id'],
             'product_name' => $product['name'],
             'variant' => $validated['variant'] ?? ($product['variants'][0] ?? 'Único'),
-            'amount' => $product['price'],
+            'amount' => $amount,
             'currency' => $product['currency'],
+            'commission_percent' => $commissionPercent,
+            'commission_amount' => $commissionAmount,
+            'net_amount' => round($amount - $commissionAmount, 2),
             'recipient_name' => $validated['recipient_name'],
             'city' => $validated['city'],
             'address' => $validated['address'],

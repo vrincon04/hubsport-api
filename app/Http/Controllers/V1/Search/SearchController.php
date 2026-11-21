@@ -11,6 +11,7 @@ use App\Models\News;
 use App\Models\Post;
 use App\Models\Sponsorship;
 use App\Models\User;
+use App\Support\RolePermissionPolicy;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -24,6 +25,13 @@ class SearchController extends Controller
         $query = trim((string) $request->query('q', ''));
 
         $viewer = $request->user();
+
+        if ($request->boolean('talent')) {
+            RolePermissionPolicy::denyUnless(
+                RolePermissionPolicy::canTalentSearch($viewer),
+                'La búsqueda de talento está reservada a entrenadores y reclutadores.'
+            );
+        }
 
         $users = User::query()
             ->with(['profile.country', 'profile.sport', 'avatar'])
@@ -49,6 +57,18 @@ class SearchController extends Controller
             ->when($request->filled('country_id'), fn ($builder) => $builder->whereHas('profile', fn ($profile) => $profile->where('country_id', $request->query('country_id'))))
             ->when($request->filled('city'), fn ($builder) => $builder->whereHas('profile', fn ($profile) => $profile->where('city', 'like', '%'.$request->query('city').'%')))
             ->when($request->filled('sport_level'), fn ($builder) => $builder->whereHas('profile', fn ($profile) => $profile->where('sport_level', $request->query('sport_level'))))
+            ->when(
+                $request->boolean('verified_only') || $request->boolean('talent'),
+                fn ($builder) => $builder->whereHas(
+                    'profile',
+                    fn ($profile) => $profile
+                        ->where('profile_type', 'athlete')
+                        ->when(
+                            $request->boolean('verified_only'),
+                            fn ($p) => $p->where('verified_badge', true)
+                        )
+                )
+            )
             ->limit(15)
             ->get();
 

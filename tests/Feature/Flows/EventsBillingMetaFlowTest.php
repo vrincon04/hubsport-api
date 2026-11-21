@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Flows;
 
+use App\Models\Country;
+use App\Models\Profile;
 use App\Models\Sport;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -15,9 +17,32 @@ class EventsBillingMetaFlowTest extends TestCase
 
     public function test_create_participate_and_save_event_flow(): void
     {
-        $organizer = User::factory()->create();
-        $athlete = User::factory()->create();
+        $country = Country::query()->create(['name' => 'República Dominicana', 'code' => 'DO']);
         $sport = Sport::factory()->create(['name' => 'Atletismo']);
+        $organizer = User::factory()->create();
+        Profile::query()->create([
+            'user_id' => $organizer->id,
+            'first_name' => 'Org',
+            'last_name' => 'Coach',
+            'country_id' => $country->id,
+            'city' => 'SD',
+            'sport_id' => $sport->id,
+            'profile_type' => 'coach',
+            'account_status' => 'active',
+            'birth_date' => '1980-01-01',
+        ]);
+        $athlete = User::factory()->create();
+        Profile::query()->create([
+            'user_id' => $athlete->id,
+            'first_name' => 'Ath',
+            'last_name' => 'Lete',
+            'country_id' => $country->id,
+            'city' => 'SD',
+            'sport_id' => $sport->id,
+            'profile_type' => 'athlete',
+            'account_status' => 'active',
+            'birth_date' => '2000-01-01',
+        ]);
 
         $create = $this->asApiUser($organizer)->postJson('/api/v1/events', [
             'name' => 'Carrera 10K',

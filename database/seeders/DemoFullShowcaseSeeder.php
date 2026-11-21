@@ -575,23 +575,55 @@ class DemoFullShowcaseSeeder extends Seeder
         foreach ($users->values() as $index => $user) {
             $user->clearMediaCollection('avatar');
             [$r, $g, $b] = $palette[$index % count($palette)];
-            $this->attachGeneratedImage($user, 'avatar', 'avatar-'.$index.'.png', $r, $g, $b);
+            $initials = collect(explode(' ', (string) $user->name))
+                ->filter()
+                ->take(2)
+                ->map(fn ($part) => mb_substr($part, 0, 1))
+                ->implode('');
+            $seed = rawurlencode((string) ($user->slug ?: $user->id ?: $index));
+            $url = "https://picsum.photos/seed/{$seed}/512/512";
+            if (! $this->tryAddMediaUrl($user, $url, 'avatar')) {
+                $this->attachGeneratedImage($user, 'avatar', 'avatar-'.$index.'.png', $r, $g, $b, $initials);
+            }
         }
     }
 
-    private function attachGeneratedImage(User|Post $model, string $collection, string $fileName, int $r, int $g, int $b): void
+    private function tryAddMediaUrl(User|Post $model, string $url, string $collection): bool
     {
-        $model->addMediaFromString($this->coloredPng($r, $g, $b))
+        try {
+            $model->addMediaFromUrl($url)->toMediaCollection($collection);
+
+            return true;
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
+    private function attachGeneratedImage(
+        User|Post $model,
+        string $collection,
+        string $fileName,
+        int $r,
+        int $g,
+        int $b,
+        ?string $initials = null
+    ): void {
+        $model->addMediaFromString($this->coloredPng($r, $g, $b, $initials))
             ->usingFileName($fileName)
             ->toMediaCollection($collection);
     }
 
-    private function coloredPng(int $r, int $g, int $b): string
+    private function coloredPng(int $r, int $g, int $b, ?string $initials = null): string
     {
         if (function_exists('imagecreatetruecolor')) {
             $image = imagecreatetruecolor(256, 256);
             $color = imagecolorallocate($image, $r, $g, $b);
             imagefilledrectangle($image, 0, 0, 255, 255, $color);
+            if ($initials !== null && $initials !== '') {
+                $white = imagecolorallocate($image, 255, 255, 255);
+                $label = strtoupper(substr($initials, 0, 2));
+                imagestring($image, 5, 108, 118, $label, $white);
+            }
             ob_start();
             imagepng($image);
             imagedestroy($image);

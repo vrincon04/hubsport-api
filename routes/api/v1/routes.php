@@ -106,6 +106,13 @@ Route::prefix('references')
         base_path('routes/api/v1/reference.php')
     );
 
+Route::get('/reports', [\App\Http\Controllers\V1\Safety\ReportController::class, 'index'])
+    ->middleware(['auth:sanctum', 'throttle:30,1'])
+    ->name('reports.index');
+Route::post('/reports', [\App\Http\Controllers\V1\Safety\ReportController::class, 'store'])
+    ->middleware(['auth:sanctum', 'throttle:20,1'])
+    ->name('reports.store');
+
 Route::prefix('events')
     ->as('events:')
     ->middleware(['auth:sanctum'])
@@ -119,3 +126,13 @@ Route::prefix('sponsorships')
     ->group(
         base_path('routes/api/v1/sponsorship.php')
     );
+
+Route::prefix('public')
+    ->as('public:')
+    ->middleware('throttle:60,1')
+    ->group(function () {
+        Route::get('/posts/{post}', [\App\Http\Controllers\V1\Public\PublicShareController::class, 'post'])
+            ->name('posts.show');
+        Route::get('/sport/news/{news}', [\App\Http\Controllers\V1\Public\PublicShareController::class, 'news'])
+            ->name('news.show');
+    });

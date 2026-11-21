@@ -16,6 +16,13 @@ class EventParticipant extends Model
         'event_id',
         'user_id',
         'status',
+        'activity_url',
+        'activity_note',
+        'linked_at',
+    ];
+
+    protected $casts = [
+        'linked_at' => 'datetime',
     ];
 
     public function event(): BelongsTo

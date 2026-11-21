@@ -208,6 +208,44 @@ class User extends Authenticatable implements MustVerifyOpt, HasMedia
         return 'none';
     }
 
+    /**
+     * IDs of accepted connection peers for this user.
+     *
+     * @return list<string>
+     */
+    public function acceptedPeerIds(): array
+    {
+        $asSender = Connection::query()
+            ->where('user_id', $this->id)
+            ->where('status', 'accepted')
+            ->pluck('connected_user_id')
+            ->all();
+        $asRecipient = Connection::query()
+            ->where('connected_user_id', $this->id)
+            ->where('status', 'accepted')
+            ->pluck('user_id')
+            ->all();
+
+        return array_values(array_unique(array_map('strval', [...$asSender, ...$asRecipient])));
+    }
+
+    public function mutualConnectionsCountWith(?self $viewer): int
+    {
+        if (! $viewer || $viewer->id === $this->id) {
+            return 0;
+        }
+
+        $mine = $this->acceptedPeerIds();
+        $theirs = $viewer->acceptedPeerIds();
+
+        return count(array_intersect($mine, $theirs));
+    }
+
+    public function acceptedConnectionsCount(): int
+    {
+        return count($this->acceptedPeerIds());
+    }
+
     public function getSportsStats(): array
     {
         $fromProfile = $this->profile?->stats;

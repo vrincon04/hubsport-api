@@ -30,8 +30,9 @@ class ChatFlowTest extends TestCase
         ]);
 
         $send->assertCreated()
-            ->assertJsonPath('text', 'Hola, ¿entrenamos mañana?')
-            ->assertJsonPath('sender_id', $me->id);
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.text', 'Hola, ¿entrenamos mañana?')
+            ->assertJsonPath('data.sender_id', $me->id);
 
         $this->asApiUser($peer)
             ->getJson("/api/v1/chat/{$conversationId}")

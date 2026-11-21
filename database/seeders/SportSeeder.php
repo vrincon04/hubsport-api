@@ -13,19 +13,27 @@ class SportSeeder extends Seeder
     public function run(): void
     {
 
-        Sport::create(['name' => 'natación']);
-        Sport::create(['name' => 'fútbol']);
-        Sport::create(['name' => 'voleibol']);
-        Sport::create(['name' => 'baloncesto']);
-        Sport::create(['name' => 'tenis']);
-        Sport::create(['name' => 'bádminton']);
-        Sport::create(['name' => 'béisbol']);
-        Sport::create(['name' => 'balonmano']);
-        Sport::create(['name' => 'hockey']);
-        Sport::create(['name' => 'rugby']);
-        Sport::create([
-            'name' => 'Fórmula 1',
-            'description' => 'Automovilismo de velocidad',
-        ]);
+        $sports = [
+            'natación',
+            'fútbol',
+            'voleibol',
+            'baloncesto',
+            'béisbol',
+            'atletismo',
+            'tenis',
+            'bádminton',
+            'balonmano',
+            'hockey',
+            'rugby',
+        ];
+
+        foreach ($sports as $name) {
+            Sport::query()->firstOrCreate(['name' => $name]);
+        }
+
+        Sport::query()->firstOrCreate(
+            ['name' => 'Fórmula 1'],
+            ['description' => 'Automovilismo de velocidad']
+        );
     }
 }

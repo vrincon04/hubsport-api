@@ -15,6 +15,11 @@ Route::post('/login', [AuthenticatedController::class, 'store'])
     ->name('login');
 Route::post('/register', RegisteredController::class)
     ->name('register');
+
+Route::match(['get', 'post'], '/guardian/confirm', \App\Http\Controllers\V1\Auth\GuardianConfirmController::class)
+    ->middleware('throttle:20,1')
+    ->name('guardian.confirm');
+
 Route::post('/{driver}/callback', SocialAuthenticatedController::class)
     ->middleware('throttle:6,1')
     ->name('register.social');
