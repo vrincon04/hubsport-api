@@ -45,7 +45,9 @@ php artisan test
 ./vendor/bin/pint --test
 ```
 
-Los tests en `tests/Feature/Flows/` cubren auth, feed, stories, conexiones, chat, search, jobs, references, events, sponsorships, billing/meta, perfil/settings/notificaciones y seguridad.
+Los tests en `tests/Feature/Flows/` cubren auth, feed, stories, conexiones, chat, search, jobs, references, events, sponsorships, billing/meta, perfil/settings/notificaciones, safety, scout metrics y certificación de fases 6–7.
+
+E2E HTTP demo: `tests/Feature/E2E/HubSportDemoJourneyE2ETest.php`.
 
 CI: `.github/workflows/ci.yml` (MySQL 8 + PHP 8.3 + extensión `gd`).
 
@@ -65,6 +67,7 @@ php artisan optimize:clear
 | `routes/api/v1/` | Rutas de la API |
 | `app/Http/Controllers/V1/` | Controllers versionados |
 | `app/Demo/` | Acceso, fixtures y facturas PDF del modo demo |
-| `tests/Feature/` | Feature tests |
+| `app/Support/` | AgePolicy, RolePermissionPolicy, ScamDetector |
+| `tests/Feature/` | Feature + Flows + E2E |
 
-No commits de `.env`, `vendor/` ni `docs/` generados. Documentación de producto vive fuera de este repositorio.
+No commits de `.env`, `vendor/` ni PDFs/APKs de entrega al cliente. El **README del proyecto sí pertenece al repo**. Documentación de producto vive fuera de este repositorio.
